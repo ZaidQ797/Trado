@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
-import {View, Text, SafeAreaView} from 'react-native';
-
+import {View, Text} from 'react-native';
+import {ThemeProvider} from 'react-native-elements';
+import theme from './src/theme';
+//Main Nav
+import MainNav from './src/navigation';
 class App extends Component {
   constructor(props) {
     super(props);
@@ -9,12 +12,9 @@ class App extends Component {
 
   render() {
     return (
-      <SafeAreaView>
-        <Text style={{alignSelf: 'center', fontFamily: 'GoogleSans-Bold'}}>
-      
-          this is the first project on ios{' '}
-        </Text>
-      </SafeAreaView>
+      <ThemeProvider theme={theme}>
+        <MainNav />
+      </ThemeProvider>
     );
   }
 }
