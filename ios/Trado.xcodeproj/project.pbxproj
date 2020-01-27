@@ -15,6 +15,7 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		1AC19AC6415A88BB075824B9 /* libPods-Trado.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1EB6268E30CD40A7D6797DBF /* libPods-Trado.a */; };
 		1DA5AA1AA1E067C975721CB7 /* libPods-Trado-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EC0D34AD4FFEDA5CC08E5438 /* libPods-Trado-tvOSTests.a */; };
+		275E670323DF58F800D5EE53 /* MarketWeb.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 275E670223DF58F800D5EE53 /* MarketWeb.ttf */; };
 		279FAAC123DF17F500FC116E /* GoogleSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 279FAABE23DF17F400FC116E /* GoogleSans-Regular.ttf */; };
 		279FAAC223DF17F500FC116E /* GoogleSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 279FAABF23DF17F400FC116E /* GoogleSans-Bold.ttf */; };
 		279FAAC323DF17F500FC116E /* GoogleSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 279FAAC023DF17F400FC116E /* GoogleSans-Medium.ttf */; };
@@ -55,6 +56,7 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Trado/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Trado/main.m; sourceTree = "<group>"; };
 		1EB6268E30CD40A7D6797DBF /* libPods-Trado.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Trado.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		275E670223DF58F800D5EE53 /* MarketWeb.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = MarketWeb.ttf; sourceTree = "<group>"; };
 		279FAABE23DF17F400FC116E /* GoogleSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GoogleSans-Regular.ttf"; sourceTree = "<group>"; };
 		279FAABF23DF17F400FC116E /* GoogleSans-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GoogleSans-Bold.ttf"; sourceTree = "<group>"; };
 		279FAAC023DF17F400FC116E /* GoogleSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GoogleSans-Medium.ttf"; sourceTree = "<group>"; };
@@ -165,6 +167,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				275E670223DF58F800D5EE53 /* MarketWeb.ttf */,
 				279FAABF23DF17F400FC116E /* GoogleSans-Bold.ttf */,
 				279FAAC023DF17F400FC116E /* GoogleSans-Medium.ttf */,
 				279FAABE23DF17F400FC116E /* GoogleSans-Regular.ttf */,
@@ -339,6 +342,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				275E670323DF58F800D5EE53 /* MarketWeb.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
