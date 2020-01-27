@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Text, ImageBackground} from 'react-native';
+import {View, Text, ImageBackground, TouchableOpacity} from 'react-native';
 import styles from './styles';
 import {splash} from '../../assets';
 import {Fonts} from '../../utils/Fonts';
@@ -13,7 +13,22 @@ class Splash extends Component {
   render() {
     return (
       <ImageBackground source={splash} style={styles.splashStyle}>
-        <Text style={{fontFamily: 'MarketWeb', fontSize: 30}}>Trado</Text>
+        <View style={styles.appNameContainer}>
+          <Text style={styles.appNameStyle}>Trado</Text>
+          <Text style={[styles.mediumText, {alignSelf: 'center'}]}>
+            Swap your products with Trado
+          </Text>
+        </View>
+        <View style={styles.bottomContainer}>
+          <TouchableOpacity
+            style={styles.buttonStyle}
+            activeOpacity={1}
+            onPress={() => {
+              this.props.navigation.navigate('Login');
+            }}>
+            <Text style={styles.largeText}>Trade Now!</Text>
+          </TouchableOpacity>
+        </View>
       </ImageBackground>
     );
   }

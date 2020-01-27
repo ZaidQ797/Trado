@@ -13,9 +13,9 @@ const mainNav = createSwitchNavigator(
     Splash: {
       screen: Splash,
     },
-    // Auth: {
-    //   screen: AuthStack,
-    // },
+    Auth: {
+      screen: AuthStack,
+    },
     // App: {
     //   screen: HomeStack,
     // },
