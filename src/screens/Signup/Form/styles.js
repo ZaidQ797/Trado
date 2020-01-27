@@ -1,22 +1,16 @@
 import {StyleSheet} from 'react-native';
-import theme from '../../theme';
-import {Fonts} from '../../utils/Fonts';
+import {Fonts} from '../../../utils/Fonts';
+import theme from '../../../theme';
 
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
   },
   headerContainer: {
-    flex: 0.25,
+    flex: 0.31,
     justifyContent: 'flex-end',
     alignItems: 'center',
   },
-  centerContainer: {
-    flex: 0.35,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
   heading: {
     fontFamily: Fonts.GoogleSansRegular,
     fontSize: 21,
@@ -33,7 +27,7 @@ const styles = StyleSheet.create({
     color: theme.colors.gray,
   },
   bottomContainer: {
-    flex: 0.5,
+    flex: 0.64,
     // justifyContent: 'flex-end',
     justifyContent: 'center',
     alignItems: 'center',
@@ -59,7 +53,14 @@ const styles = StyleSheet.create({
     height: 20,
     width: 20,
   },
-
+  inputFieldStyle: {
+    width: '80%',
+    borderRadius: 4,
+    borderColor: 'lightgray',
+    borderWidth: 1,
+    padding: 15,
+    marginVertical: 10,
+  },
   primaryButton: {
     width: '80%',
     borderRadius: 4,
@@ -68,10 +69,6 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  illustrationStyle: {
-    height: '100%',
-    width: '100%',
   },
 });
 export default styles;

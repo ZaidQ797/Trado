@@ -6,6 +6,8 @@ const theme = {
     secondary: '#000000',
     tertiary: '#F6F6F6',
     iconColor: '#515C6F',
+    white: '#f1f1f1',
+    gray: '#5c5c5c',
   },
   Header: {
     backgroundColor: '#fff',
