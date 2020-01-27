@@ -13,12 +13,12 @@ const mainNav = createSwitchNavigator(
     Splash: {
       screen: Splash,
     },
-    Auth: {
-      screen: AuthStack,
-    },
-    App: {
-      screen: HomeStack,
-    },
+    // Auth: {
+    //   screen: AuthStack,
+    // },
+    // App: {
+    //   screen: HomeStack,
+    // },
   },
   {initialRouteName: 'Splash'},
 );
