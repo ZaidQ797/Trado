@@ -16,9 +16,9 @@ const mainNav = createSwitchNavigator(
     Auth: {
       screen: AuthStack,
     },
-    // App: {
-    //   screen: HomeStack,
-    // },
+    App: {
+      screen: HomeStack,
+    },
   },
   {initialRouteName: 'Splash'},
 );

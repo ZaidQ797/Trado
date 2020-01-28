@@ -7,13 +7,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerContainer: {
-    flex: 0.21,
+    flex: 0.3,
     justifyContent: 'flex-end',
     alignItems: 'center',
   },
   centerContainer: {
-    flex: 0.25,
-    justifyContent: 'center',
+    flex: 0.3,
+    justifyContent: 'flex-start',
     alignItems: 'center',
   },
   appNameStyle: {
@@ -38,12 +38,11 @@ const styles = StyleSheet.create({
     color: theme.colors.gray,
   },
   bottomContainer: {
-    flex: 0.64,
-    // justifyContent: 'flex-end',
+    flex: 0.4,
+    justifyContent: 'flex-end',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 5,
-    // backgroundColor: 'green',
+    marginBottom: 10,
   },
 
   horizontalContainer: {
@@ -69,8 +68,8 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     borderColor: 'lightgray',
     borderWidth: 1,
-    padding: 15,
-    marginVertical: 10,
+    padding: 10,
+    marginVertical: 8,
   },
   primaryButton: {
     width: '80%',

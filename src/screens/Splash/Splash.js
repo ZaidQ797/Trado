@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Text, ImageBackground, TouchableOpacity} from 'react-native';
+import {View, Text, ImageBackground, TouchableOpacity,SafeAreaView} from 'react-native';
 import styles from './styles';
 import {splash} from '../../assets';
 import {Fonts} from '../../utils/Fonts';

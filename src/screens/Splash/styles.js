@@ -27,13 +27,13 @@ const styles = StyleSheet.create({
     color: theme.colors.white,
   },
   bottomContainer: {
-    flex: 0.7,
+    flex: 0.71,
     justifyContent: 'flex-end',
     alignSelf: 'center',
     marginBottom: 5,
   },
   buttonStyle: {
-    width: '70%',
+    // width: '80%',
     paddingVertical: 10,
     paddingHorizontal: '13%',
     justifyContent: 'center',

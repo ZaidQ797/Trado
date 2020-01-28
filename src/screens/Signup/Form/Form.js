@@ -35,7 +35,6 @@ class Form extends Component {
     return (
       <ScrollView
         contentContainerStyle={{flex: 1, flexGrow: 1}}
-        automaticallyAdjustContentInsets={false}
         showsVerticalScrollIndicator={false}>
         <View style={styles.headerContainer}>
           <Text style={styles.heading}>Sign Up Now</Text>
