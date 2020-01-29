@@ -33,10 +33,7 @@ class Form extends Component {
 
   render() {
     return (
-      <ScrollView
-        contentContainerStyle={{flex: 1, flexGrow: 1}}
-        automaticallyAdjustContentInsets={false}
-        showsVerticalScrollIndicator={false}>
+      <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
         <View style={styles.headerContainer}>
           <Text style={styles.heading}>Sign Up Now</Text>
           <Text style={[styles.mediumText, {marginVertical: 10}]}>

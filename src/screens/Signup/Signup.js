@@ -12,9 +12,7 @@ class Signup extends Component {
 
   render() {
     return (
-      <ScrollView
-        style={styles.mainContainer}
-        contentContainerStyle={{flex: 1}}>
+      <ScrollView style={styles.mainContainer}>
         <View style={styles.headerContainer}>
           <Text style={styles.heading}> Welcome</Text>
           <Text style={[styles.mediumText, {marginVertical: 10}]}>

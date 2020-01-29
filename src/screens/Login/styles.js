@@ -1,18 +1,23 @@
-import {StyleSheet} from 'react-native';
+import {StyleSheet, Dimensions} from 'react-native';
 import theme from '../../theme';
 import {Fonts} from '../../utils/Fonts';
+const Device_Width = Dimensions.get('window').width;
+const Device_Height = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
   },
   headerContainer: {
-    flex: 0.21,
-    justifyContent: 'flex-end',
+    width: '100%',
+    height: Device_Height / 4,
+
     alignItems: 'center',
+    justifyContent: 'center',
   },
   centerContainer: {
-    flex: 0.25,
+    width: '100%',
+    height: Device_Height / 3,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -38,12 +43,12 @@ const styles = StyleSheet.create({
     color: theme.colors.gray,
   },
   bottomContainer: {
-    flex: 0.64,
-    // justifyContent: 'flex-end',
+    width: '100%',
+    height: Device_Height / 3,
+    justifyContent: 'flex-end',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 5,
-    // backgroundColor: 'green',
+    marginBottom: 10,
   },
 
   horizontalContainer: {
@@ -69,8 +74,8 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     borderColor: 'lightgray',
     borderWidth: 1,
-    padding: 15,
-    marginVertical: 10,
+    padding: 10,
+    marginVertical: 8,
   },
   primaryButton: {
     width: '80%',
