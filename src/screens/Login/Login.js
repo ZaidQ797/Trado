@@ -26,40 +26,14 @@ class Login extends Component {
   render() {
     return (
       <SafeAreaView style={styles.mainContainer}>
-        <ScrollView
-          contentContainerStyle={{flex: 1}}
-          showsVerticalScrollIndicator={false}>
+        <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
           <View style={styles.headerContainer}>
             <Text style={styles.heading}> Login Now</Text>
             <Text style={[styles.mediumText, {marginVertical: 10}]}>
               Please Login to continue using our app
             </Text>
           </View>
-          <View style={styles.centerContainer}>
-            <Text style={[styles.mediumText, {marginVertical: 20}]}>
-              Enter via social networks
-            </Text>
-            <View style={styles.horizontalContainer}>
-              <TouchableOpacity
-                activeOpacity={1}
-                style={[styles.iconContainer, {backgroundColor: '#DB4A39'}]}>
-                <Image
-                  source={google}
-                  resizeMode={'contain'}
-                  style={[styles.iconStyle]}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                activeOpacity={1}
-                style={[styles.iconContainer, {backgroundColor: '#4267B2'}]}>
-                <Image
-                  source={fb}
-                  resizeMode={'contain'}
-                  style={[styles.iconStyle]}
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
+
           <View style={styles.bottomContainer}>
             <Text style={[styles.mediumText, {marginBottom: 10}]}>
               {' '}
@@ -92,16 +66,46 @@ class Login extends Component {
                 Login
               </Text>
             </TouchableOpacity>
-            <View style={{flexDirection: 'row'}}>
-              <Text style={[styles.mediumText]}>Don't have an account? </Text>
-              <Text
-                style={[styles.mediumText, {color: theme.colors.primary}]}
-                onPress={() => {
-                  this.props.navigation.navigate('Signup');
-                }}>
-                Sign up
-              </Text>
+          </View>
+
+          <View style={styles.centerContainer}>
+            <Text style={[styles.mediumText, {marginVertical: 20}]}>
+              Enter via social networks
+            </Text>
+            <View style={styles.horizontalContainer}>
+              <TouchableOpacity
+                activeOpacity={1}
+                style={[styles.iconContainer, {backgroundColor: '#DB4A39'}]}>
+                <Image
+                  source={google}
+                  resizeMode={'contain'}
+                  style={[styles.iconStyle]}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={1}
+                style={[styles.iconContainer, {backgroundColor: '#4267B2'}]}>
+                <Image
+                  source={fb}
+                  resizeMode={'contain'}
+                  style={[styles.iconStyle]}
+                />
+              </TouchableOpacity>
             </View>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignSelf: 'center',
+            }}>
+            <Text style={[styles.mediumText]}>Don't have an account? </Text>
+            <Text
+              style={[styles.mediumText, {color: theme.colors.primary}]}
+              onPress={() => {
+                this.props.navigation.navigate('Signup');
+              }}>
+              Sign up
+            </Text>
           </View>
         </ScrollView>
       </SafeAreaView>

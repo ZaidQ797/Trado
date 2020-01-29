@@ -26,7 +26,7 @@ const HeaderLeft = ({navigation, icon}) => {
           activeOpacity={0}
           style={styles.drawerIcon}
           onPress={() => {
-           alert('pressed');
+            navigation.openDrawer();
           }}>
           <Image
             source={drawer}

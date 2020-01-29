@@ -173,16 +173,16 @@ class Home extends Component {
               index.toString();
             }}
           />
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            data={products}
+            numColumns={2}
+            renderItem={this.renderProducts}
+            keyExtractor={(item, index) => {
+              item.key.toString();
+            }}
+          />
         </View>
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          data={products}
-          numColumns={2}
-          renderItem={this.renderProducts}
-          keyExtractor={(item, index) => {
-            item.key.toString();
-          }}
-        />
       </SafeAreaView>
     );
   }

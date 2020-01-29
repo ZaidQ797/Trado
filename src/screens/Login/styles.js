@@ -1,19 +1,24 @@
-import {StyleSheet} from 'react-native';
+import {StyleSheet, Dimensions} from 'react-native';
 import theme from '../../theme';
 import {Fonts} from '../../utils/Fonts';
+const Device_Width = Dimensions.get('window').width;
+const Device_Height = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
   },
   headerContainer: {
-    flex: 0.3,
-    justifyContent: 'flex-end',
+    width: '100%',
+    height: Device_Height / 4,
+
     alignItems: 'center',
+    justifyContent: 'center',
   },
   centerContainer: {
-    flex: 0.3,
-    justifyContent: 'flex-start',
+    width: '100%',
+    height: Device_Height / 3,
+    justifyContent: 'center',
     alignItems: 'center',
   },
   appNameStyle: {
@@ -38,7 +43,8 @@ const styles = StyleSheet.create({
     color: theme.colors.gray,
   },
   bottomContainer: {
-    flex: 0.4,
+    width: '100%',
+    height: Device_Height / 3,
     justifyContent: 'flex-end',
     justifyContent: 'center',
     alignItems: 'center',
