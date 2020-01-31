@@ -8,6 +8,7 @@ const theme = {
     iconColor: '#515C6F',
     white: '#f1f1f1',
     gray: '#5c5c5c',
+    text: '#222B45',
   },
   Header: {
     backgroundColor: '#fff',

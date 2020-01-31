@@ -119,16 +119,13 @@ class Home extends Component {
     );
   };
 
-  renderProducts = ({item, index}) => {
+  renderProducts = (item, index) => {
     return (
       <TouchableOpacity
         style={styles.productContainer}
         activeOpacity={1}
-        onLongPress={() => {
-          alert('Long Button Pressed');
-        }}
         onPress={() => {
-          alert('BUtton');
+          this.props.navigation.navigate('ProductDetail', {id: index});
         }}>
         <ImageBackground
           source={item.image}
@@ -177,10 +174,10 @@ class Home extends Component {
             showsVerticalScrollIndicator={false}
             data={products}
             numColumns={2}
-            renderItem={this.renderProducts}
             keyExtractor={(item, index) => {
               item.key.toString();
             }}
+            renderItem={index => this.renderProducts(index)}
           />
         </View>
       </SafeAreaView>
