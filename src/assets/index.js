@@ -7,6 +7,9 @@ export const clock = require('./images/clock.jpg');
 export const shirt = require('./images/shirt.jpg');
 export const sofa = require('./images/sofa.jpg');
 export const user = require('./images/user.png');
+export const bicycle1 = require('./images/bicycle1.jpg');
+export const bicycle2 = require('./images/bicycle2.jpg');
+export const bicycle3 = require('./images/bicycle3.jpg');
 //icons
 export const fb = require('./icons/fb.png');
 export const google = require('./icons/google.png');
