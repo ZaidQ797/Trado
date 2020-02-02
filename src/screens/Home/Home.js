@@ -6,12 +6,12 @@ import {
   TouchableOpacity,
   Image,
   ImageBackground,
+  SafeAreaView,
 } from 'react-native';
 import theme from '../../theme';
 import {Fonts} from '../../utils/Fonts';
 import styles from './styles';
 import {Header, Divider, SearchBar} from 'react-native-elements';
-import {SafeAreaView} from 'react-navigation';
 import HeaderLeft from '../../components/HeaderLeft';
 import HeaderCenter from '../../components/HeaderCenter';
 import {
@@ -119,7 +119,7 @@ class Home extends Component {
     );
   };
 
-  renderProducts = (item, index) => {
+  renderProducts = ({item, index}) => {
     return (
       <TouchableOpacity
         style={styles.productContainer}
@@ -170,16 +170,16 @@ class Home extends Component {
               index.toString();
             }}
           />
-          <FlatList
-            showsVerticalScrollIndicator={false}
-            data={products}
-            numColumns={2}
-            keyExtractor={(item, index) => {
-              item.key.toString();
-            }}
-            renderItem={index => this.renderProducts(index)}
-          />
         </View>
+        <FlatList
+          data={products}
+          renderItem={this.renderProducts}
+          keyExtractor={(item, index) => {
+            index.toString();
+          }}
+          showsVerticalScrollIndicator={false}
+          numColumns={2}
+        />
       </SafeAreaView>
     );
   }

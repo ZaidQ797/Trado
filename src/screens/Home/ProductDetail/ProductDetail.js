@@ -6,6 +6,8 @@ import {
   SafeAreaView,
   ScrollView,
   Image,
+  TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 import styles from './styles';
 import Swiper from 'react-native-swiper';
@@ -16,11 +18,18 @@ import {bicycle1, bicycle2, bicycle3, user} from '../../../assets';
 import theme from '../../../theme';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 
 class ProductDetail extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      latitude: 32.082466,
+      longitude: 72.669128,
+      error: null,
+      latitudeDelta: 0.015,
+      longitudeDelta: 0.0121,
+      description: 'Sargodha',
       swiperImages: [
         {id: 1, image: bicycle1},
         {id: 2, image: bicycle2},
@@ -28,10 +37,29 @@ class ProductDetail extends Component {
       ],
     };
   }
+  // componentDidMount() {
+  //   navigator.geolocation.getCurrentPosition(
+  //     position => {
+  //       this.setState({
+  //         latitude: position.coords.latitude,
+  //         longitude: position.coords.longitude,
 
+  //         error: null,
+  //       });
+  //     },
+  //     error => this.setState({error: error.message}),
+  //     {enableHighAccuracy: false, timeout: 200000},
+  //   );
+  // }
   render() {
     const id = this.props.navigation.getParam('id');
-    console.warn(id);
+    const {
+      latitude,
+      longitude,
+      latitudeDelta,
+      longitudeDelta,
+      description,
+    } = this.state;
     const {swiperImages} = this.state;
     return (
       <SafeAreaView style={styles.mainContainer}>
@@ -69,7 +97,7 @@ class ProductDetail extends Component {
               );
             })}
         </Swiper>
-        <ScrollView style={{flex: 1}}>
+        <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
           <Text style={[styles.largeText, {width: '100%'}]}>
             Orignal Audi Bicycle with auto padal 2020 Modal{'   '}
             {
@@ -121,7 +149,12 @@ class ProductDetail extends Component {
             </View>
           </View>
           <Divider style={styles.dividerStyle} />
-          <View
+
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => {
+              this.props.navigation.navigate('PersonProfile');
+            }}
             style={[
               styles.horizontalContainer,
               {
@@ -133,7 +166,6 @@ class ProductDetail extends Component {
               resizeMode={'contain'}
               style={styles.circularImageStyle}
             />
-
             <View>
               <Text style={styles.largeText}>Imran Ali</Text>
               <Rating
@@ -144,8 +176,37 @@ class ProductDetail extends Component {
                 ratingBackgroundColor="black"
               />
             </View>
-          </View>
+            <Ionicons
+              name="ios-arrow-forward"
+              size={20}
+              color={theme.colors.gray}
+              style={{position: 'absolute', right: 0, alignSelf: 'center'}}
+            />
+          </TouchableOpacity>
+
           <Divider style={styles.dividerStyle} />
+          <Text style={[styles.largeText, {margin: 5}]}>Location</Text>
+          <View style={styles.container}>
+            <MapView
+              provider={PROVIDER_GOOGLE} // remove if not using Google Maps
+              style={styles.map}
+              scrollEnabled={false}
+              initialRegion={{
+                latitude: latitude,
+                longitude: longitude,
+                latitudeDelta: latitudeDelta,
+                longitudeDelta: longitudeDelta,
+              }}>
+              <Marker
+                coordinate={{
+                  latitude: latitude,
+                  longitude: longitude,
+                }}
+                title="TechNDevs"
+                description={description}
+              />
+            </MapView>
+          </View>
         </ScrollView>
       </SafeAreaView>
     );

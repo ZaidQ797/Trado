@@ -23,7 +23,7 @@ const mainNav = createSwitchNavigator(
       screen: DrawerNav,
     },
   },
-  {initialRouteName: 'Splash'},
+  {initialRouteName: 'App'},
 );
 
 export default createAppContainer(mainNav);
