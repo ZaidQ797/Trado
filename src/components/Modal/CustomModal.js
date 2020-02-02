@@ -11,21 +11,17 @@ import Modal from 'react-native-modal';
 import theme from '../../theme';
 import styles from './styles';
 import {
-  audio,
+  
   carIcon,
   motorcycle,
-  services,
+ 
   homegarden,
   house,
   kids,
   fashion,
   sport,
   phone,
-  sofa,
-  clock,
-  car,
-  shirt,
-  bicycle,
+ 
 } from '../../assets';
 import Entypo from 'react-native-vector-icons/Entypo';
 

@@ -15,10 +15,8 @@ import {Header, Divider, SearchBar} from 'react-native-elements';
 import HeaderLeft from '../../components/HeaderLeft';
 import HeaderCenter from '../../components/HeaderCenter';
 import {
-  audio,
   carIcon,
   motorcycle,
-  services,
   homegarden,
   house,
   kids,
@@ -91,11 +89,11 @@ class Home extends Component {
         '#317FB7',
       ],
       products: [
-        {key: 1, image: car},
-        {key: 2, image: sofa},
-        {key: 3, image: shirt},
-        {key: 4, image: bicycle},
-        {key: 5, image: clock},
+        {id: 1, image: car, selected: false},
+        {id: 2, image: sofa, selected: false},
+        {id: 3, image: shirt, selected: false},
+        {id: 4, image: bicycle, selected: false},
+        {id: 5, image: clock, selected: false},
       ],
     };
   }
@@ -128,20 +126,37 @@ class Home extends Component {
           this.props.navigation.navigate('ProductDetail', {id: index});
         }}>
         <ImageBackground
+          key={index}
           source={item.image}
           style={styles.userImageStyle}
           resizeMode={'cover'}>
           <Ionicons
+            onPress={() => {
+              this.hanleFav(item);
+            }}
             name="ios-heart"
             size={20}
-            color="white"
+            color={item.selected ? theme.colors.primary : 'white'}
             style={styles.heartStyle}
           />
         </ImageBackground>
       </TouchableOpacity>
     );
   };
-
+  hanleFav = item => {
+    const {id} = item;
+    this.setState({
+      products: this.state.products.map(item => {
+        if (item.id === id) {
+          return {
+            ...item,
+            selected: !item.selected,
+          };
+        }
+        return item;
+      }),
+    });
+  };
   render() {
     const {search, categories, products} = this.state;
     return (
