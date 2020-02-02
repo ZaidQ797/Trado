@@ -30,6 +30,7 @@ class ProductDetail extends Component {
       latitudeDelta: 0.015,
       longitudeDelta: 0.0121,
       description: 'Sargodha',
+      isFavorite: false,
       swiperImages: [
         {id: 1, image: bicycle1},
         {id: 2, image: bicycle2},
@@ -51,6 +52,9 @@ class ProductDetail extends Component {
   //     {enableHighAccuracy: false, timeout: 200000},
   //   );
   // }
+  toggleFavorite = () => {
+    this.setState({isFavorite: !this.state.isFavorite});
+  };
   render() {
     const id = this.props.navigation.getParam('id');
     const {
@@ -90,7 +94,16 @@ class ProductDetail extends Component {
                         flexDirection: 'row',
                       },
                     ]}>
-                    <Ionicons name="ios-heart" color={'white'} size={22} />
+                    <Ionicons
+                      name="ios-heart"
+                      color={
+                        this.state.isFavorite ? theme.colors.primary : 'white'
+                      }
+                      size={22}
+                      onPress={() => {
+                        this.toggleFavorite();
+                      }}
+                    />
                     <Ionicons name="md-share-alt" color={'white'} size={25} />
                   </View>
                 </ImageBackground>
