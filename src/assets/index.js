@@ -10,6 +10,12 @@ export const user = require('./images/user.png');
 export const bicycle1 = require('./images/bicycle1.jpg');
 export const bicycle2 = require('./images/bicycle2.jpg');
 export const bicycle3 = require('./images/bicycle3.jpg');
+export const upload = require('./images/upload.png');
+export const fresh = require('./images/new.png');
+export const likenew = require('./images/likenew.png');
+export const good = require('./images/good.png');
+export const satisfactory = require('./images/satisfactory.png');
+export const poor = require('./images/poor.png');
 //icons
 export const fb = require('./icons/fb.png');
 export const google = require('./icons/google.png');

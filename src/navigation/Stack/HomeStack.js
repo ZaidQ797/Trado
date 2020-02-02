@@ -3,18 +3,26 @@ import {createStackNavigator} from 'react-navigation-stack';
 //screens
 import Home from '../../screens/Home';
 import ProductDetail from '../../screens/Home/ProductDetail';
+import PersonProfile from '../../screens/Home/ProductDetail/PersonProfile';
+
 const HomeStack = createStackNavigator(
   {
     Home: {
       screen: Home,
       navigationOptions: {
-        header: null,
+        headerShown: false,
       },
     },
     ProductDetail: {
       screen: ProductDetail,
       navigationOptions: {
-        header: null,
+        headerShown: false,
+      },
+    },
+    PersonProfile: {
+      screen: PersonProfile,
+      navigationOptions: {
+        headerShown: false,
       },
     },
   },

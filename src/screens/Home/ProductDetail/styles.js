@@ -1,7 +1,7 @@
-import {StyleSheet} from 'react-native';
+import {StyleSheet, Dimensions} from 'react-native';
 import theme from '../../../theme';
 import {Fonts} from '../../../utils/Fonts';
-
+const DEVICE_HEIGHT = Dimensions.get('window').height;
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
@@ -57,6 +57,18 @@ const styles = StyleSheet.create({
     width: 50,
     borderRadius: 70,
     alignSelf: 'center',
+  },
+  container: {
+    // ...StyleSheet.absoluteFillObject,
+    height: DEVICE_HEIGHT / 3,
+    width: '97%',
+    marginVertical: 5,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    alignSelf: 'center',
+  },
+  map: {
+    ...StyleSheet.absoluteFillObject,
   },
 });
 export default styles;
