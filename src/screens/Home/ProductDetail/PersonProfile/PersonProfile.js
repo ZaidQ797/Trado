@@ -15,6 +15,9 @@ import {user} from '../../../../assets';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import theme from '../../../../theme';
 import Trading from './components/Trading';
+import TradeDone from './components/TradeDone';
+import Reviews from './components/Reviews';
+
 class PersonProfile extends Component {
   constructor(props) {
     super(props);
@@ -122,6 +125,8 @@ class PersonProfile extends Component {
             </TouchableOpacity>
           </View>
           {trading ? <Trading /> : null}
+          {tradeDone ? <TradeDone /> : null}
+          {reviews ? <Reviews /> : null}
         </ScrollView>
       </View>
     );
