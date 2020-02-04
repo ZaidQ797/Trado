@@ -18,7 +18,7 @@ import {bicycle1, bicycle2, bicycle3, user} from '../../../assets';
 import theme from '../../../theme';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 
 class ProductDetail extends Component {
   constructor(props) {

@@ -8,10 +8,10 @@ import {
   Dimensions,
   ImageBackground,
 } from 'react-native';
-import {bicycle, bicycle2, sofa, clock} from '../../../../../assets';
+import {bicycle, bicycle2, sofa, clock} from '../../../assets';
 import {Divider} from 'react-native-elements';
-import {Fonts} from '../../../../../utils/Fonts';
-import theme from '../../../../../theme';
+import {Fonts} from '../../../utils/Fonts';
+import theme from '../../../theme';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 class TradeDone extends Component {
