@@ -59,7 +59,7 @@ class Signup extends Component {
 
           <TouchableOpacity
             style={styles.primaryButton}
-            activeOpacity={1}
+            activeOpacity={0.7}
             onPress={() => this.props.navigation.navigate('Form')}>
             <Text style={[styles.largeText, {color: theme.colors.white}]}>
               Sign Up

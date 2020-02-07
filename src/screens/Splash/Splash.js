@@ -1,15 +1,29 @@
 import React, {Component} from 'react';
-import {View, Text, ImageBackground, TouchableOpacity,SafeAreaView} from 'react-native';
+import {
+  View,
+  Text,
+  ImageBackground,
+  TouchableOpacity,
+  SafeAreaView,
+  ActivityIndicator,
+} from 'react-native';
 import styles from './styles';
 import {splash} from '../../assets';
 import {Fonts} from '../../utils/Fonts';
+import firebaseService from '../../service/firebase';
+import {Loader} from '../../utils/Loading';
+import theme from '../../theme';
 
 class Splash extends Component {
   constructor(props) {
     super(props);
     this.state = {};
   }
-
+  componentDidMount() {
+    firebaseService.auth().onAuthStateChanged(user => {
+      this.props.navigation.navigate(user ? 'Home' : 'Form');
+    });
+  }
   render() {
     return (
       <ImageBackground source={splash} style={styles.splashStyle}>
@@ -20,14 +34,7 @@ class Splash extends Component {
           </Text>
         </View>
         <View style={styles.bottomContainer}>
-          <TouchableOpacity
-            style={styles.buttonStyle}
-            activeOpacity={1}
-            onPress={() => {
-              this.props.navigation.navigate('Login');
-            }}>
-            <Text style={styles.largeText}>Trade Now!</Text>
-          </TouchableOpacity>
+          <Loader visible="true" color={'white'} />
         </View>
       </ImageBackground>
     );

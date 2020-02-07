@@ -16,6 +16,7 @@ export const likenew = require('./images/likenew.png');
 export const good = require('./images/good.png');
 export const satisfactory = require('./images/satisfactory.png');
 export const poor = require('./images/poor.png');
+export const uploadPic = require('./images/uploadPic.png');
 //icons
 export const fb = require('./icons/fb.png');
 export const google = require('./icons/google.png');
@@ -31,3 +32,4 @@ export const motorcycle = require('./icons/motorcycle.png');
 export const fashion = require('./icons/shoe.png');
 export const sport = require('./icons/sport.png');
 export const phone = require('./icons/phone.png');
+export const featured = require('./icons/featured.png');

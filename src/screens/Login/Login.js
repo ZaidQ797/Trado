@@ -17,6 +17,7 @@ class Login extends Component {
     super(props);
     this.state = {email: '', password: ''};
   }
+  
   onChangeEmail = email => {
     this.setState({email: email});
   };
