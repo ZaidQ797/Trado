@@ -9,12 +9,20 @@ import {
 import styles from './styles';
 import theme from '../../../theme';
 import {Fonts} from '../../../utils/Fonts';
+import firebaseService from '../../../service/firebase';
 
 class Form extends Component {
   constructor(props) {
     super(props);
-    this.state = {name: '', email: '', passowrd: '', cnf: ''};
+    this.state = {name: '', email: '', passowrd: '', cnf: '', errMsg: null};
   }
+  handleSignup = () => {
+    firebaseService
+      .auth()
+      .createUserWithEmailAndPassword(this.state.email, this.state.passowrd)
+      .then(() => this.props.navigation.navigate('Home'))
+      .catch(error => this.setState({errorMessage: error.message}));
+  };
   onChangeName = name => {
     this.setState({name: name});
   };
@@ -58,7 +66,7 @@ class Form extends Component {
             keyboardType="name-phone-pad"
             secureTextEntry
             style={styles.inputFieldStyle}
-            onChangeText={password => this.onChangeEmail(password)}
+            onChangeText={password => this.onChangePassword(password)}
           />
           <TextInput
             placeholder="Confirm Password"
@@ -68,7 +76,11 @@ class Form extends Component {
             onChangeText={cnf => this.onChangeCnfPassword(cnf)}
           />
 
-          <TouchableOpacity style={styles.primaryButton} activeOpacity={1}>
+          <TouchableOpacity
+            style={styles.primaryButton}
+            activeOpacity={1}
+            
+            onPress={this.handleSignup()}>
             <Text style={[styles.largeText, {color: theme.colors.white}]}>
               Register
             </Text>

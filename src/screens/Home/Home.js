@@ -28,6 +28,7 @@ import {
   car,
   shirt,
   bicycle,
+  featured,
 } from '../../assets';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -38,44 +39,58 @@ class Home extends Component {
       search: '',
       categories: [
         {
+          key: 0,
+          name: 'Featured',
+          image: featured,
+          selected: true,
+        },
+        {
           key: 1,
           name: 'Cars',
           image: carIcon,
+          width: '30%',
         },
         {
           key: 2,
           name: 'Motorcycles\nand others',
           image: motorcycle,
+          width: '30%',
         },
         {
           key: 3,
           name: 'Electronics',
           image: phone,
+          width: '30%',
         },
         {
           key: 4,
           name: 'Sports',
           image: sport,
+          width: '30%',
         },
         {
           key: 5,
           name: 'Fashion',
           image: fashion,
+          width: '30%',
         },
         {
           key: 6,
           name: 'Housing',
           image: house,
+          width: '30%',
         },
         {
           key: 7,
           name: 'Home & Garden',
           image: homegarden,
+          width: '30%',
         },
         {
           key: 8,
           name: 'Baby and Child',
           image: kids,
+          width: '30%',
         },
       ],
       categoriesColors: [
@@ -107,7 +122,12 @@ class Home extends Component {
     return (
       <TouchableOpacity
         activeOpacity={1}
-        style={[styles.categoryStyle, {backgroundColor: categoryColor}]}>
+        style={[styles.categoryStyle, {backgroundColor: categoryColor}]}
+        onPress={() => {
+          this.props.navigation.navigate('FilteredCategory', {
+            item: item,
+          });
+        }}>
         <Image
           source={item.image}
           resizeMode={'contain'}

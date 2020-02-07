@@ -1,18 +1,9 @@
 import React, {Component} from 'react';
-import {
-  View,
-  Text,
-  SafeAreaView,
-  Image,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
+import {View, Text, TouchableOpacity, ScrollView} from 'react-native';
 import {Header, Divider} from 'react-native-elements';
 import HeaderLeft from '../../components/HeaderLeft';
 import HeaderCenter from '../../components/HeaderCenter';
 import styles from './styles';
-import {user} from '../../assets';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import theme from '../../theme';
 import Trading from './components/Trading';
 import TradeDone from './components/TradeDone';
@@ -57,9 +48,7 @@ class MyListing extends Component {
     return (
       <View style={styles.mainContainer}>
         <Header
-          leftComponent={
-            <HeaderLeft navigation={this.props.navigation} icon={'back'} />
-          }
+          leftComponent={<HeaderLeft navigation={this.props.navigation} />}
           centerComponent={<HeaderCenter name="My Listing" />}
           containerStyle={styles.headerStyle}
         />

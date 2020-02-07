@@ -4,6 +4,7 @@ import {createStackNavigator} from 'react-navigation-stack';
 import Home from '../../screens/Home';
 import ProductDetail from '../../screens/Home/ProductDetail';
 import PersonProfile from '../../screens/Home/ProductDetail/PersonProfile';
+import FilteredCategory from '../../screens/Home/FilteredCategory';
 
 const HomeStack = createStackNavigator(
   {
@@ -21,6 +22,12 @@ const HomeStack = createStackNavigator(
     },
     PersonProfile: {
       screen: PersonProfile,
+      navigationOptions: {
+        headerShown: false,
+      },
+    },
+    FilteredCategory: {
+      screen: FilteredCategory,
       navigationOptions: {
         headerShown: false,
       },
