@@ -112,7 +112,7 @@ class Trade extends Component {
       selectedCategory,
     } = this.state;
     return (
-      <View>
+      <View style={{flex:1}}>
         <Header
           leftComponent={<HeaderLeft navigation={this.props.navigation} />}
           centerComponent={<HeaderCenter name="Home" />}

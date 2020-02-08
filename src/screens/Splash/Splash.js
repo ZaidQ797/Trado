@@ -21,7 +21,7 @@ class Splash extends Component {
   }
   componentDidMount() {
     firebaseService.auth().onAuthStateChanged(user => {
-      this.props.navigation.navigate(user ? 'Home' : 'Form');
+      this.props.navigation.navigate(user ? 'Home' : 'Signup');
     });
   }
   render() {

@@ -17,6 +17,7 @@ export const good = require('./images/good.png');
 export const satisfactory = require('./images/satisfactory.png');
 export const poor = require('./images/poor.png');
 export const uploadPic = require('./images/uploadPic.png');
+export const default_user = require('./images/default_user.png');
 //icons
 export const fb = require('./icons/fb.png');
 export const google = require('./icons/google.png');

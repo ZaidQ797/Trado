@@ -1,69 +1,36 @@
-import {StyleSheet, Dimensions} from 'react-native';
-import {Fonts} from '../../../utils/Fonts';
+import {StyleSheet} from 'react-native';
 import theme from '../../../theme';
-const Device_Width = Dimensions.get('window').width;
-const Device_Height = Dimensions.get('window').height;
+import {Fonts} from '../../../utils/Fonts';
 
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerContainer: {
-    width: '100%',
-    height: Device_Height / 3,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  heading: {
-    fontFamily: Fonts.GoogleSansRegular,
-    fontSize: 21,
-    color: theme.colors.secondary,
-  },
-  largeText: {
-    fontFamily: Fonts.GoogleSansMedium,
-    fontSize: 16,
-    color: theme.colors.secondary,
-  },
-  mediumText: {
-    fontFamily: Fonts.GoogleSansRegular,
-    fontSize: 12,
-    color: theme.colors.gray,
-  },
-  bottomContainer: {
-    width: '100%',
-    height: Device_Height / 1,
-    justifyContent: 'flex-start',
-
-    alignItems: 'center',
+    backgroundColor: 'white',
   },
 
-  horizontalContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
+  formContainer: {
+    flex: 0.45,
+    alignItems: 'flex-end',
+    marginTop: '10%',
+  },
+  inputStyle: {
+    width: '85%',
+    color: 'gray',
+    fontFamily: Fonts.GoogleSansRegular,
+    fontSize: 17,
+    padding: 13,
+  },
+  buttonTextStyle: {
+    fontFamily: Fonts.GoogleSansBold,
   },
   iconContainer: {
-    width: '35%',
-    paddingVertical: 10,
-    paddingHorizontal: '3%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: theme.colors.primary,
-    borderRadius: 5,
-  },
-  iconStyle: {
-    height: 20,
-    width: 20,
-  },
-  inputFieldStyle: {
-    width: '80%',
+    flexDirection: 'row',
+    borderBottomColor: theme.colors.lightGray,
+    borderWidth: 0.5,
+    borderColor: 'gray',
     borderRadius: 4,
-    borderColor: 'lightgray',
-    borderWidth: 1,
-    padding: 15,
-    marginVertical: 10,
+    alignSelf: 'center',
+    margin: 12,
   },
   primaryButton: {
     width: '80%',
@@ -73,6 +40,20 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
+    alignSelf: 'center',
+  },
+
+  smallTextStyle: {
+    fontSize: 13,
+    fontFamily: Fonts.GoogleSansMedium,
+    color: theme.colors.lightGray,
+    alignSelf: 'center',
+  },
+
+  signupContainer: {
+    flexDirection: 'row',
+    alignSelf: 'center',
+    marginBottom: 5,
   },
 });
 export default styles;
