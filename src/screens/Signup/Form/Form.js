@@ -14,18 +14,28 @@ import {
 } from 'react-native';
 import styles from './styles';
 import theme from '../../../theme';
+import RNFetchBlob from 'react-native-fetch-blob';
 import {Fonts} from '../../../utils/Fonts';
+import uuid from 'react-native-uuid';
 import DocumentPicker from 'react-native-document-picker';
-import {default_user} from '../../../assets';
+import {default_user, user} from '../../../assets';
 import firebaseService from '../../../service/firebase';
-import {Loader} from '../../../utils/Loading';
+import Snackbar from 'react-native-snackbar';
+// Prepare Blob support
+const Blob = RNFetchBlob.polyfill.Blob;
+const fs = RNFetchBlob.fs;
+window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest;
+window.Blob = Blob;
+
 class Form extends Component {
   state = {
     userName: '',
     password: '',
     email: '',
     confirmPassword: '',
-    selectedImage: '',
+    image: null,
+    gotImage: false,
+    imageURI: null,
   };
   height = Dimensions.get('window').height;
   width = Dimensions.get('window').width;
@@ -43,7 +53,8 @@ class Form extends Component {
         type: [DocumentPicker.types.images],
       });
       this.setState({
-        selectedImage: res,
+        image: res.uri,
+        gotImage: true,
       });
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
@@ -75,27 +86,176 @@ class Form extends Component {
     });
   };
 
+  // User signUp method
   handleSignupOnPress = () => {
-    this.toggleLoading();
-    const {email, password} = this.state;
-
-    firebaseService
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then(res => {
-        this.saveUserInfo();
-      })
-      .catch(err => {
-        this.toggleLoading();
-        alert(err);
-      });
+    const {image, email, password} = this.state;
+    let validation = this.validateData();
+    console.warn(validation);
+    if (validation == true) {
+      this.toggleLoading();
+      firebaseService
+        .auth()
+        .createUserWithEmailAndPassword(email, password)
+        .then(() => {
+          // console.warn("User SignUp Successfully");
+          this.uploadImage(image);
+        })
+        .catch(error => {
+          this.toggleLoading();
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          alert(errorMessage);
+          // console.warn("ERROR => ", errorCode, errorMessage);
+        });
+    }
   };
 
+  // validate User's Register Data...
+  validateData = () => {
+    const {gotImage, userName, email, password, confirmPassword} = this.state;
+    // console.warn(gotImage, name, email, number, address, password);
+    if (gotImage != true) {
+      Snackbar.show({
+        text: 'Kindly upload image',
+        duration: Snackbar.LENGTH_SHORT,
+        backgroundColor: theme.colors.primary,
+        fontFamily: Fonts.GoogleSansMedium,
+      });
+      return false;
+    } else {
+      if (userName == '') {
+        Snackbar.show({
+          text: 'Kindly enter your name',
+          duration: Snackbar.LENGTH_SHORT,
+          backgroundColor: theme.colors.primary,
+          fontFamily: Fonts.GoogleSansMedium,
+        });
+        return false;
+      } else if (userName.length < 8) {
+        Snackbar.show({
+          text: 'Name must have more than 8 chachracters',
+          duration: Snackbar.LENGTH_SHORT,
+          backgroundColor: theme.colors.primary,
+          fontFamily: Fonts.GoogleSansMedium,
+        });
+        return false;
+      }
+      if (email == '') {
+        Snackbar.show({
+          text: 'Kindly enter your email',
+          duration: Snackbar.LENGTH_SHORT,
+          backgroundColor: theme.colors.primary,
+          fontFamily: Fonts.GoogleSansMedium,
+        });
+        return false;
+      } else {
+        if (email) {
+          let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+          if (reg.test(email) === false) {
+            Snackbar.show({
+              text: 'Kindly enter correct email',
+              duration: Snackbar.LENGTH_SHORT,
+              backgroundColor: theme.colors.primary,
+              fontFamily: Fonts.GoogleSansMedium,
+            });
+            return false;
+          }
+        }
+      }
+      if (password == '') {
+        Snackbar.show({
+          text: 'Kindly enter password',
+          duration: Snackbar.LENGTH_SHORT,
+          backgroundColor: theme.colors.primary,
+          fontFamily: Fonts.GoogleSansMedium,
+        });
+        return false;
+      } else {
+        if (password.length < 8) {
+          Snackbar.show({
+            text: 'Password must contain 8 characters',
+            duration: Snackbar.LENGTH_SHORT,
+            backgroundColor: theme.colors.primary,
+            fontFamily: Fonts.GoogleSansMedium,
+          });
+          return false;
+        }
+      }
+      if (confirmPassword == '') {
+        Snackbar.show({
+          text: 'Kindly confirm password',
+          duration: Snackbar.LENGTH_SHORT,
+          backgroundColor: theme.colors.primary,
+          fontFamily: Fonts.GoogleSansMedium,
+        });
+        return false;
+      } else {
+        if (confirmPassword != password) {
+          Snackbar.show({
+            text: 'Passwords did not match',
+            duration: Snackbar.LENGTH_SHORT,
+            backgroundColor: theme.colors.primary,
+            fontFamily: Fonts.GoogleSansMedium,
+          });
+          return false;
+        } else {
+          return true;
+        }
+      }
+    }
+  };
+
+  // First Upload image and download Image URI then call saveUserToDB()...
+  uploadImage(uri, mime = 'image/jpeg') {
+    return new Promise((resolve, reject) => {
+      const uploadUri =
+        Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
+      let uploadBlob = '';
+
+      const imageRef = firebaseService
+        .storage()
+        .ref('images')
+        .child(uuid.v4());
+
+      fs.readFile(uploadUri, 'base64')
+        .then(data => {
+          return Blob.build(data, {type: `${mime};BASE64`});
+        })
+        .then(blob => {
+          uploadBlob = blob;
+          return imageRef.put(blob, {contentType: mime});
+        })
+        .then(() => {
+          uploadBlob.close();
+
+          const downnloadImageURI = imageRef.getDownloadURL().then(url => {
+            this.setState(
+              {
+                imageURI: url,
+              },
+              () => {
+                alert('ImageURI ==> ', this.state.imageURI);
+                this.saveUserInfo();
+              },
+            );
+          });
+          return downnloadImageURI;
+        })
+        .then(url => {
+          resolve(url);
+        })
+        .catch(error => {
+          this.toggleLoading();
+          reject(error);
+        });
+    });
+  }
   saveUserInfo = () => {
-    const {userName, email, password} = this.state;
+    const {userName, email, password, imageURI} = this.state;
     const {navigate} = this.props.navigation;
     const uid = firebaseService.auth().currentUser.uid;
     const params = {
+      image: imageURI,
       username: userName,
       email: email,
       password: password,
@@ -108,15 +268,40 @@ class Form extends Component {
       .set(params)
       .then(res => {
         this.toggleLoading();
-        navigate('Home');
+        navigate('Login');
       })
       .catch(err => {
         alert(err);
       });
   };
-
+  // save User's SignUp info...
+  // saveUserToDB = () => {
+  //   const {userName, email, password} = this.state;
+  //   const currentUserId = firebaseService.auth().currentUser.uid;
+  //   const params = {
+  //     username: userName,
+  //     email: email,
+  //     password: password,
+  //   };
+  //   firebaseService
+  //     .database()
+  //     .ref('Users')
+  //     .child(currentUserId)
+  //     .set({
+  //       params,
+  //     })
+  //     .then(() => {
+  //       this.toggleLoading();
+  //       console.warn('User Registered Successfully');
+  //       this.replaceScreen('Home');
+  //     })
+  //     .catch(error => {
+  //       this.toggleLoading();
+  //       console.warn('Error => ', error);
+  //     });
+  // };
   render() {
-    const {selectedImage} = this.state;
+    const {image, gotImage} = this.state;
     return (
       <SafeAreaView style={styles.mainContainer}>
         <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
@@ -146,9 +331,9 @@ class Form extends Component {
             <TouchableOpacity
               style={{justifyContent: 'center', alignItems: 'center'}}
               onPress={() => this.pickProfile()}>
-              {selectedImage !== '' ? (
+              {gotImage ? (
                 <Image
-                  source={{uri: selectedImage.uri}}
+                  source={{uri: image}}
                   style={{width: 100, height: 100, borderRadius: 50}}
                   resizeMode={'cover'}
                 />
@@ -169,7 +354,7 @@ class Form extends Component {
                   paddingTop: 5,
                   color: 'gray',
                 }}>
-                {selectedImage !== '' ? 'Change' : 'Upload your picture'}
+                {gotImage ? 'Change' : 'Upload your picture'}
               </Text>
             </TouchableOpacity>
           </View>
