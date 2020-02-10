@@ -1,10 +1,10 @@
 export default {
-  apiKey: 'AIzaSyByC_8QpKPJ1L6GEM_X75ruEz8qReR_VOk',
-  authDomain: 'trado-9c88d.firebaseapp.com',
-  databaseURL: 'https://trado-9c88d.firebaseio.com',
-  projectId: 'trado-9c88d',
-  storageBucket: 'trado-9c88d.appspot.com',
-  messagingSenderId: '452588219179',
-  appId: '1:452588219179:web:cad6b1b6f232be82f8f36e',
-  measurementId: 'G-20SXXR86V4',
+  apiKey: 'AIzaSyAnWZFJD3vvOv564p4oeelJ_VLNY6bEdxc',
+  authDomain: 'trado-1eef8.firebaseapp.com',
+  databaseURL: 'https://trado-1eef8.firebaseio.com',
+  projectId: 'trado-1eef8',
+  storageBucket: 'trado-1eef8.appspot.com',
+  messagingSenderId: '1078596445932',
+  appId: '1:1078596445932:web:a40093e3ee137dd001e7c9',
+  measurementId: 'G-5PYR5399MY',
 };

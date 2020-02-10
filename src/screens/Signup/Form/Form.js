@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import styles from './styles';
 import theme from '../../../theme';
-import RNFetchBlob from 'react-native-fetch-blob';
+import RNFetchBlob from 'rn-fetch-blob';
 import {Fonts} from '../../../utils/Fonts';
 import uuid from 'react-native-uuid';
 import DocumentPicker from 'react-native-document-picker';
@@ -35,7 +35,6 @@ class Form extends Component {
     confirmPassword: '',
     image: null,
     gotImage: false,
-    imageURI: null,
   };
   height = Dimensions.get('window').height;
   width = Dimensions.get('window').width;
@@ -206,10 +205,10 @@ class Form extends Component {
   };
 
   // First Upload image and download Image URI then call saveUserToDB()...
-  uploadImage(uri, mime = 'image/jpeg') {
+  uploadImage = (uri, mime = 'image/jpeg') => {
     return new Promise((resolve, reject) => {
-      const uploadUri =
-        Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
+      const uploadUri = uri;
+      // Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
       let uploadBlob = '';
 
       const imageRef = firebaseService
@@ -227,17 +226,9 @@ class Form extends Component {
         })
         .then(() => {
           uploadBlob.close();
-
           const downnloadImageURI = imageRef.getDownloadURL().then(url => {
-            this.setState(
-              {
-                imageURI: url,
-              },
-              () => {
-                alert('ImageURI ==> ', this.state.imageURI);
-                this.saveUserInfo();
-              },
-            );
+            const imageUri = url;
+            this.saveUserInfo(imageUri);
           });
           return downnloadImageURI;
         })
@@ -249,13 +240,13 @@ class Form extends Component {
           reject(error);
         });
     });
-  }
-  saveUserInfo = () => {
-    const {userName, email, password, imageURI} = this.state;
+  };
+  saveUserInfo = imgUri => {
+    const {userName, email, password} = this.state;
     const {navigate} = this.props.navigation;
     const uid = firebaseService.auth().currentUser.uid;
     const params = {
-      image: imageURI,
+      image: imgUri,
       username: userName,
       email: email,
       password: password,
@@ -274,32 +265,7 @@ class Form extends Component {
         alert(err);
       });
   };
-  // save User's SignUp info...
-  // saveUserToDB = () => {
-  //   const {userName, email, password} = this.state;
-  //   const currentUserId = firebaseService.auth().currentUser.uid;
-  //   const params = {
-  //     username: userName,
-  //     email: email,
-  //     password: password,
-  //   };
-  //   firebaseService
-  //     .database()
-  //     .ref('Users')
-  //     .child(currentUserId)
-  //     .set({
-  //       params,
-  //     })
-  //     .then(() => {
-  //       this.toggleLoading();
-  //       console.warn('User Registered Successfully');
-  //       this.replaceScreen('Home');
-  //     })
-  //     .catch(error => {
-  //       this.toggleLoading();
-  //       console.warn('Error => ', error);
-  //     });
-  // };
+
   render() {
     const {image, gotImage} = this.state;
     return (
