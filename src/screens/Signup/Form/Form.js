@@ -207,10 +207,11 @@ class Form extends Component {
   // First Upload image and download Image URI then call saveUserToDB()...
   uploadImage = (uri, mime = 'image/jpeg') => {
     return new Promise((resolve, reject) => {
-      const uploadUri = uri;
-      // Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
+      const uploadUri =
+        Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
+      // alert(uploadUri);
+      // return;
       let uploadBlob = '';
-
       const imageRef = firebaseService
         .storage()
         .ref('images')
@@ -244,8 +245,9 @@ class Form extends Component {
   saveUserInfo = imgUri => {
     const {userName, email, password} = this.state;
     const {navigate} = this.props.navigation;
-    const uid = firebaseService.auth().currentUser.uid;
+    const userId = firebaseService.auth().currentUser.uid;
     const params = {
+      uid: userId,
       image: imgUri,
       username: userName,
       email: email,
@@ -255,11 +257,11 @@ class Form extends Component {
     firebaseService
       .database()
       .ref('/Users')
-      .child(uid)
+      .child(userId)
       .set(params)
       .then(res => {
         this.toggleLoading();
-        navigate('Login');
+        this.props.navigation.navigate('Login');
       })
       .catch(err => {
         alert(err);
@@ -350,7 +352,7 @@ class Form extends Component {
                 style={styles.inputStyle}
                 placeholder="Enter Password"
                 keyboardType={'numbers-and-punctuation'}
-                secureTextEntry={true}
+                // secureTextEntry={true}
                 onChangeText={password => this.handlePasswordChange(password)}
                 placeholderTextColor="gray"
               />
@@ -360,7 +362,7 @@ class Form extends Component {
                 style={styles.inputStyle}
                 placeholder="Confirm Password"
                 keyboardType={'numbers-and-punctuation'}
-                secureTextEntry={true}
+                // secureTextEntry={true}
                 onChangeText={confirmPassword =>
                   this.handleCnfrmPasswordChange(confirmPassword)
                 }

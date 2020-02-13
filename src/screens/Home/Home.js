@@ -7,6 +7,7 @@ import {
   Image,
   ImageBackground,
   SafeAreaView,
+  ActivityIndicator,
 } from 'react-native';
 import theme from '../../theme';
 import {Fonts} from '../../utils/Fonts';
@@ -14,6 +15,7 @@ import styles from './styles';
 import {Header, Divider, SearchBar} from 'react-native-elements';
 import HeaderLeft from '../../components/HeaderLeft';
 import HeaderCenter from '../../components/HeaderCenter';
+
 import {
   carIcon,
   motorcycle,
@@ -31,12 +33,15 @@ import {
   featured,
 } from '../../assets';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import firebaseService from '../../service/firebase';
 
 class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
       search: '',
+      loading: false,
+      data: [],
       categories: [
         {
           key: 0,
@@ -112,6 +117,22 @@ class Home extends Component {
       ],
     };
   }
+  componentDidMount() {
+    this.toggleLoading();
+    const ref = firebaseService.database().ref('/Procuts');
+    ref.once('value').then(snapshot => {
+      const newFreshArr = Object.values(snapshot.val());
+
+      this.setState(
+        {
+          data: newFreshArr,
+        },
+        () => {
+          this.toggleLoading();
+        },
+      );
+    });
+  }
   updateSearch = search => {
     this.setState({search: search});
   };
@@ -147,7 +168,7 @@ class Home extends Component {
         }}>
         <ImageBackground
           key={index}
-          source={item.image}
+          source={{uri: item.image.toString()}}
           style={styles.userImageStyle}
           resizeMode={'cover'}>
           <Ionicons
@@ -156,7 +177,7 @@ class Home extends Component {
             }}
             name="ios-heart"
             size={20}
-            color={item.selected ? theme.colors.primary : 'white'}
+            color={item.isFav ? theme.colors.primary : 'white'}
             style={styles.heartStyle}
           />
         </ImageBackground>
@@ -166,16 +187,19 @@ class Home extends Component {
   hanleFav = item => {
     const {id} = item;
     this.setState({
-      products: this.state.products.map(item => {
+      data: this.state.data.map(item => {
         if (item.id === id) {
           return {
             ...item,
-            selected: !item.selected,
+            isFav: !item.isFav,
           };
         }
         return item;
       }),
     });
+  };
+  toggleLoading = () => {
+    this.setState({loading: !this.state.loading});
   };
   render() {
     const {search, categories, products} = this.state;
@@ -206,15 +230,33 @@ class Home extends Component {
             }}
           />
         </View>
-        <FlatList
-          data={products}
-          renderItem={this.renderProducts}
-          keyExtractor={(item, index) => {
-            index.toString();
-          }}
-          showsVerticalScrollIndicator={false}
-          numColumns={2}
-        />
+        {this.state.loading ? (
+          <ActivityIndicator
+            animating
+            color={theme.colors.primary}
+            // style={visible ? loader.centering : loader.hideIndicator}
+            size="large"
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0,
+
+              backgroundColor: 'transparent',
+            }}
+          />
+        ) : (
+          <FlatList
+            data={this.state.data}
+            renderItem={this.renderProducts}
+            keyExtractor={(item, index) => {
+              index.toString();
+            }}
+            showsVerticalScrollIndicator={false}
+            numColumns={2}
+          />
+        )}
       </SafeAreaView>
     );
   }

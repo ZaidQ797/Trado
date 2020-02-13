@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {View, Text, Image, StyleSheet} from 'react-native';
 import {createDrawerNavigator} from 'react-navigation-drawer';
-import {Content} from './Content';
+import Content from './Content';
 import {home, group} from '../../assets';
 import theme from '../../theme';
 import AntDesign from 'react-native-vector-icons/AntDesign';
