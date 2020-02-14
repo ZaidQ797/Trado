@@ -88,7 +88,13 @@ class Profile extends Component {
   onChangePassword = password => {
     this.setState({userPassword: password});
   };
+
+  uploadImage = () => {
+    //TODO!!! Update image to Storage
+  };
+
   updateProfile = () => {
+    this.uploadImage();
     this.toggleLoading();
     const {userName, userEmail, userPassword, userImg} = this.state;
     const currentUser = firebaseService.auth().currentUser.uid;

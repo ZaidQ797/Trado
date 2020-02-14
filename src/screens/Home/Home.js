@@ -31,6 +31,7 @@ import {
   shirt,
   bicycle,
   featured,
+  default_user,
 } from '../../assets';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import firebaseService from '../../service/firebase';
@@ -117,22 +118,21 @@ class Home extends Component {
       ],
     };
   }
-  componentDidMount() {
-    this.toggleLoading();
-    const ref = firebaseService.database().ref('/Procuts');
-    ref.once('value').then(snapshot => {
-      const newFreshArr = Object.values(snapshot.val());
-
-      this.setState(
-        {
-          data: newFreshArr,
-        },
-        () => {
-          this.toggleLoading();
-        },
-      );
-    });
-  }
+  componentDidMount = () => {
+    // this.toggleLoading();
+    // const ref = firebaseService.database().ref('/Procuts');
+    // ref.once('value').then(snapshot => {
+    //   const newFreshArr = Object.values(snapshot.val());
+    //   this.setState(
+    //     {
+    //       data: newFreshArr,
+    //     },
+    //     () => {
+    //       this.toggleLoading();
+    //     },
+    //   );
+    // });
+  };
   updateSearch = search => {
     this.setState({search: search});
   };
@@ -168,7 +168,7 @@ class Home extends Component {
         }}>
         <ImageBackground
           key={index}
-          source={{uri: item.image.toString()}}
+          source={default_user}
           style={styles.userImageStyle}
           resizeMode={'cover'}>
           <Ionicons

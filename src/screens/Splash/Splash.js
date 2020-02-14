@@ -20,13 +20,14 @@ class Splash extends Component {
     this.state = {};
   }
   componentDidMount = () => {
-    firebaseService.auth().onAuthStateChanged(user => {
-      if (user) {
-        this.props.navigation.navigate('Home');
-      } else {
-        this.props.navigation.navigate('Login');
-      }
-    });
+    // firebaseService.auth().onAuthStateChanged(user => {
+    //   if (user) {
+    //     this.props.navigation.navigate('Home');
+    //   } else {
+    //     this.props.navigation.navigate('Login');
+    //   }
+    // });
+    this.props.navigation.navigate('Login');
   };
   render() {
     return (

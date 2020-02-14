@@ -151,7 +151,7 @@ class Login extends Component {
               <TouchableOpacity
                 style={styles.primaryButton}
                 activeOpacity={1}
-                onPress={() => this.signIn}>
+                onPress={this.signIn}>
                 <Text style={[styles.largeText, {color: theme.colors.white}]}>
                   Login
                 </Text>

@@ -12,7 +12,7 @@ import {
 
 import {DrawerItems} from 'react-navigation-drawer';
 import theme from '../../theme';
-import {user} from '../../assets';
+import {user, default_user} from '../../assets';
 import {Fonts} from '../../utils/Fonts';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import firebaseService from '../../service/firebase';
@@ -25,13 +25,12 @@ class Content extends React.Component {
       userImg: null,
     };
   }
-  componentDidMount() {
+  componentDidMount = () => {
     const userId = firebaseService.auth().currentUser.uid;
     const ref = firebaseService
       .database()
       .ref('/Users')
       .child(userId);
-
     ref
       .once('value')
       .then(snapshot => {
@@ -43,14 +42,21 @@ class Content extends React.Component {
       .catch(err => {
         console.log(err);
       });
-  }
+  };
   render() {
+    const {userImg} = this.state;
     return (
       <SafeAreaView
         style={styles.mainContainer}
         forceInset={{top: 'always', horizontal: 'never'}}>
         <View style={styles.drawerHeaderContainer}>
-          <Image source={{uri: this.state.userImg}} style={styles.userIcon} />
+          {/* <Image
+            source={{
+              uri: userImg !== null && userImg !== undefined ? userImg : '',
+            }}
+            style={styles.userIcon}
+          /> */}
+          <Image source={default_user} style={styles.userIcon} />
           <Text style={styles.largeText}>{this.state.userName}</Text>
         </View>
         <ScrollView

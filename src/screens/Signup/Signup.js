@@ -11,11 +11,11 @@ class Signup extends Component {
     this.state = {email: '', password: ''};
   }
   componentDidMount() {
-    firebaseService.auth().onAuthStateChanged(user => {
-      if (user) {
-        this.props.navigation.navigate('Home');
-      }
-    });
+    // firebaseService.auth().onAuthStateChanged(user => {
+    //   if (user) {
+    //     this.props.navigation.navigate('Home');
+    //   }
+    // });
   }
   render() {
     return (

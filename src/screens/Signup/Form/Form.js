@@ -11,6 +11,8 @@ import {
   TextInput,
   Dimensions,
   ActivityIndicator,
+  PermissionsAndroid,
+  Platform,
 } from 'react-native';
 import styles from './styles';
 import theme from '../../../theme';
@@ -45,14 +47,38 @@ class Form extends Component {
     });
   };
 
+  storagePermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        {
+          title: 'Storage Permission',
+          message: 'App needs access to memory to pick images the file ',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        //Alert.alert('Permission granted', 'Now you can download anything!');
+      } else {
+        Alert.alert(
+          'Permission Denied!',
+          'You need to give storage permission to download the file',
+        );
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+
   pickProfile = async () => {
+    Platform.OS === 'android' && (await this.storagePermission());
+
     // Pick a single file
     try {
       const res = await DocumentPicker.pick({
         type: [DocumentPicker.types.images],
       });
       this.setState({
-        image: res.uri,
+        image: res,
         gotImage: true,
       });
     } catch (err) {
@@ -87,7 +113,7 @@ class Form extends Component {
 
   // User signUp method
   handleSignupOnPress = () => {
-    const {image, email, password} = this.state;
+    const {email, password} = this.state;
     let validation = this.validateData();
     console.warn(validation);
     if (validation == true) {
@@ -97,7 +123,7 @@ class Form extends Component {
         .createUserWithEmailAndPassword(email, password)
         .then(() => {
           // console.warn("User SignUp Successfully");
-          this.uploadImage(image);
+          this.uploadImage();
         })
         .catch(error => {
           this.toggleLoading();
@@ -205,10 +231,16 @@ class Form extends Component {
   };
 
   // First Upload image and download Image URI then call saveUserToDB()...
-  uploadImage = (uri, mime = 'image/jpeg') => {
+  uploadImage = () => {
     return new Promise((resolve, reject) => {
+      const {uri} = this.state.image;
+      //  file:///fkaskdjfhaskdfhasdkfhasdfhajsdkfhasdkfha.jpg
       const uploadUri =
         Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
+      console.log('====================================');
+      console.log(uploadUri);
+      console.log('====================================');
+      //return;
       // alert(uploadUri);
       // return;
       let uploadBlob = '';
@@ -219,11 +251,14 @@ class Form extends Component {
 
       fs.readFile(uploadUri, 'base64')
         .then(data => {
-          return Blob.build(data, {type: `${mime};BASE64`});
+          return Blob.build(data, {type: `${this.state.image.type};BASE64`});
         })
         .then(blob => {
           uploadBlob = blob;
-          return imageRef.put(blob, {contentType: mime});
+          console.log('====================================');
+          console.log(uploadBlob);
+          console.log('====================================');
+          return imageRef.put(blob, {contentType: this.state.image.type});
         })
         .then(() => {
           uploadBlob.close();
@@ -238,6 +273,7 @@ class Form extends Component {
         })
         .catch(error => {
           this.toggleLoading();
+          alert(error);
           reject(error);
         });
     });
@@ -299,23 +335,11 @@ class Form extends Component {
             <TouchableOpacity
               style={{justifyContent: 'center', alignItems: 'center'}}
               onPress={() => this.pickProfile()}>
-              {gotImage ? (
-                <Image
-                  source={{uri: image}}
-                  style={{width: 100, height: 100, borderRadius: 50}}
-                  resizeMode={'cover'}
-                />
-              ) : (
-                <Image
-                  source={default_user}
-                  style={{
-                    width: 80,
-                    height: 80,
-                    tintColor: theme.colors.primary,
-                  }}
-                  resizeMode={'contain'}
-                />
-              )}
+              <Image
+                source={gotImage ? {uri: image && image.uri} : default_user}
+                style={{width: 100, height: 100, borderRadius: 50}}
+                resizeMode={'cover'}
+              />
               <Text
                 style={{
                   fontFamily: Fonts.GoogleSansRegular,
@@ -374,6 +398,7 @@ class Form extends Component {
               style={styles.primaryButton}
               activeOpacity={0.8}
               onPress={this.handleSignupOnPress}>
+              {/* //  onPress={this.uploadImage}> */}
               <Text style={[styles.largeText, {color: theme.colors.white}]}>
                 Register
               </Text>
