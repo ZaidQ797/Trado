@@ -1,23 +1,65 @@
 import React, {Component} from 'react';
-import {View, Text, TouchableOpacity, Image, TextInput} from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  TextInput,
+  ActivityIndicator,
+} from 'react-native';
 import {Header, Divider} from 'react-native-elements';
 import HeaderLeft from '../../components/HeaderLeft';
 import HeaderCenter from '../../components/HeaderCenter';
 import styles from './styles';
 import DocumentPicker from 'react-native-document-picker';
-import {uploadPic} from '../../assets';
+// import {uploadPic} from '../../assets';
 import {Fonts} from '../../utils/Fonts';
 import theme from '../../theme';
+import {Loader} from '../../utils/Loading';
+import firebaseService from '../../service/firebase';
 class Profile extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedImage: '',
-      name: 'Muhammad Zaid Qureshi',
-      email: 'qzaid797@gmail.com',
-      password: '123456',
+      userName: null,
+      userEmail: null,
+      userPassword: null,
+      userImg: null,
+      loading: false,
     };
   }
+  componentDidMount() {
+    this.toggleLoading();
+    const userId = firebaseService.auth().currentUser.uid;
+    const ref = firebaseService
+      .database()
+      .ref('/Users')
+      .child(userId);
+
+    ref
+      .once('value')
+      .then(snapshot => {
+        this.setState(
+          {
+            userName: snapshot.val().username,
+            userImg: snapshot.val().image,
+            userEmail: snapshot.val().email,
+            userPassword: snapshot.val().password,
+          },
+          () => {
+            this.toggleLoading();
+          },
+        );
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
+  toggleLoading = () => ({
+    loading: !this.state.loading,
+  });
+
   pickProfile = async () => {
     // Pick a single file
     try {
@@ -25,7 +67,7 @@ class Profile extends Component {
         type: [DocumentPicker.types.images],
       });
       this.setState({
-        selectedImage: res,
+        userImg: res.uri,
       });
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
@@ -36,19 +78,37 @@ class Profile extends Component {
     }
   };
   onChangeName = name => {
-    this.setState({name: name});
+    this.setState({userName: name});
   };
 
   onChangeEmail = email => {
-    this.setState({email: email});
+    this.setState({userEmail: email});
   };
 
   onChangePassword = password => {
-    this.setState({password: password});
+    this.setState({userPassword: password});
   };
-
+  updateProfile = () => {
+    this.toggleLoading();
+    const {userName, userEmail, userPassword, userImg} = this.state;
+    const currentUser = firebaseService.auth().currentUser.uid;
+    firebaseService
+      .database()
+      .ref('/Users')
+      .child(currentUser)
+      .update({
+        username: userName,
+      })
+      .then(data => {
+        console
+          .log('Data Updated SuccessFully' + data.toString())
+          .cath(error => {
+            console.log(error);
+          });
+      });
+  };
   render() {
-    const {selectedImage, name, email, password} = this.state;
+    const {userImg, userName, userEmail, userPassword} = this.state;
     return (
       <View style={styles.mainContainer}>
         <Header
@@ -56,58 +116,68 @@ class Profile extends Component {
           centerComponent={<HeaderCenter name="Profile" />}
           containerStyle={styles.headerStyle}
         />
-        <View
-          style={{height: 200, alignItems: 'center', justifyContent: 'center'}}>
-          <TouchableOpacity
-            style={{justifyContent: 'center', alignItems: 'center'}}
-            onPress={() => this.pickProfile()}>
-            {selectedImage !== '' ? (
-              <Image
-                source={{uri: selectedImage.uri}}
-                style={{width: 100, height: 100, borderRadius: 50}}
-                resizeMode={'cover'}
-              />
-            ) : (
-              <Image
-                source={uploadPic}
-                style={{width: 80, height: 80}}
-                resizeMode={'contain'}
-              />
-            )}
-            <Text style={{fontFamily: Fonts.OpenSans, paddingTop: 5}}>
-              {selectedImage !== '' ? 'Change' : 'Upload your picture'}
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.bottomContainer}>
-          <TextInput
-            placeholder="Enter your Name"
-            keyboardType="default"
-            style={styles.inputFieldStyle}
-            value={name}
-            onChangeText={name => this.onChangeName(name)}
-          />
-          <TextInput
-            placeholder="Email"
-            keyboardType="email-address"
-            value={email}
-            style={styles.inputFieldStyle}
-            onChangeText={email => this.onChangeEmail(email)}
-          />
-          <TextInput
-            placeholder="Enter Password"
-            keyboardType="name-phone-pad"
-            secureTextEntry
-            value={password}
-            style={styles.inputFieldStyle}
-            onChangeText={password => this.onChangePassword(password)}
-          />
+        <Loader visible={this.props.visible} />
+        <View>
+          <View
+            style={{
+              height: 200,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <TouchableOpacity
+              style={{justifyContent: 'center', alignItems: 'center'}}
+              onPress={() => this.pickProfile()}>
+              {userImg !== null ? (
+                <Image
+                  source={{uri: userImg}}
+                  style={{width: 100, height: 100, borderRadius: 50}}
+                  resizeMode={'cover'}
+                />
+              ) : (
+                <Image
+                  source={userImg}
+                  style={{width: 80, height: 80}}
+                  resizeMode={'contain'}
+                />
+              )}
+              <Text style={{fontFamily: Fonts.OpenSans, paddingTop: 5}}>
+                {userImg !== null ? 'Change' : 'Upload your picture'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.bottomContainer}>
+            <TextInput
+              placeholder="Enter your Name"
+              keyboardType="default"
+              style={styles.inputFieldStyle}
+              value={userName}
+              onChangeText={name => this.onChangeName(name)}
+            />
+            <TextInput
+              placeholder="Email"
+              keyboardType="email-address"
+              value={userEmail}
+              style={styles.inputFieldStyle}
+              onChangeText={email => this.onChangeEmail(email)}
+            />
+            <TextInput
+              placeholder="Enter Password"
+              keyboardType="name-phone-pad"
+              secureTextEntry
+              value={userPassword}
+              style={styles.inputFieldStyle}
+              onChangeText={password => this.onChangePassword(password)}
+            />
 
-          <TouchableOpacity style={styles.primaryButton} activeOpacity={1}>
-            <Text style={[styles.largeText, {color: theme.colors.white}]}>
-              Update Profile
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.primaryButton}
+              activeOpacity={0.9}
+              onPress={this.updateProfile}>
+              <Text style={[styles.largeText, {color: theme.colors.white}]}>
+                Update Profile
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     );

@@ -21,24 +21,28 @@ class Content extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      userImg: null,
       userName: null,
+      userImg: null,
     };
   }
   componentDidMount() {
-    const user = firebaseService.auth().currentUser.uid;
-    const ref = firebaseService.database().ref('/Users');
+    const userId = firebaseService.auth().currentUser.uid;
+    const ref = firebaseService
+      .database()
+      .ref('/Users')
+      .child(userId);
 
-    ref.once('value').then(snapshot => {
-      const newFreshArr = Object.values(snapshot.val());
-
-      this.setState(
-        {
-          data: newFreshArr,
-        },
-        () => {},
-      );
-    });
+    ref
+      .once('value')
+      .then(snapshot => {
+        this.setState({
+          userName: snapshot.val().username,
+          userImg: snapshot.val().image,
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }
   render() {
     return (
@@ -46,8 +50,8 @@ class Content extends React.Component {
         style={styles.mainContainer}
         forceInset={{top: 'always', horizontal: 'never'}}>
         <View style={styles.drawerHeaderContainer}>
-          <Image source={user} style={styles.userIcon} />
-          <Text style={styles.largeText}>Zaid Qureshi</Text>
+          <Image source={{uri: this.state.userImg}} style={styles.userIcon} />
+          <Text style={styles.largeText}>{this.state.userName}</Text>
         </View>
         <ScrollView
           showsVerticalScrollIndicator={false}
