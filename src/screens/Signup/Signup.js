@@ -3,13 +3,20 @@ import {View, Text, Image, TouchableOpacity, ScrollView} from 'react-native';
 import styles from './styles';
 import theme from '../../theme';
 import {fb, google, welcomeIllustration} from '../../assets';
+import firebaseService from '../../service/firebase';
 
 class Signup extends Component {
   constructor(props) {
     super(props);
     this.state = {email: '', password: ''};
   }
-
+  componentDidMount() {
+    firebaseService.auth().onAuthStateChanged(user => {
+      if (user) {
+        this.props.navigation.navigate('Home');
+      }
+    });
+  }
   render() {
     return (
       <ScrollView style={styles.mainContainer}>

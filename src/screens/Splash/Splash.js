@@ -19,11 +19,15 @@ class Splash extends Component {
     super(props);
     this.state = {};
   }
-  componentDidMount() {
+  componentDidMount = () => {
     firebaseService.auth().onAuthStateChanged(user => {
-      this.props.navigation.navigate(user ? 'Home' : 'Signup');
+      if (user) {
+        this.props.navigation.navigate('Home');
+      } else {
+        this.props.navigation.navigate('Login');
+      }
     });
-  }
+  };
   render() {
     return (
       <ImageBackground source={splash} style={styles.splashStyle}>

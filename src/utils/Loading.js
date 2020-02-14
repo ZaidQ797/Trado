@@ -2,10 +2,10 @@ import React from 'react';
 import {ActivityIndicator, StyleSheet} from 'react-native';
 import theme from '../theme';
 
-export const Loader = ({visible, color, top, bottom}) => (
+export const Loader = ({visible}) => (
   <ActivityIndicator
     animating
-    color={color}
+    color={theme.colors.primary}
     style={visible ? loader.centering : loader.hideIndicator}
     size="large"
   />
@@ -19,8 +19,8 @@ const loader = StyleSheet.create({
     right: 0,
     bottom: 0,
     //zIndex: 70,
-    backgroundColor: 'transparent',
-    opacity: 0.8,
+    backgroundColor: 'gray',
+    opacity: 0.5,
   },
   hideIndicator: {
     position: 'absolute',

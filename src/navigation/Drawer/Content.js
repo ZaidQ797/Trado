@@ -15,38 +15,67 @@ import theme from '../../theme';
 import {user} from '../../assets';
 import {Fonts} from '../../utils/Fonts';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import firebaseService from '../../service/firebase';
 
-export const Content = props => {
-  return (
-    <SafeAreaView
-      style={styles.mainContainer}
-      forceInset={{top: 'always', horizontal: 'never'}}>
-      <View style={styles.drawerHeaderContainer}>
-        <Image source={user} style={styles.userIcon} />
-        <Text style={styles.largeText}>Zaid Qureshi</Text>
-      </View>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        style={styles.drawerItemsContainerStyle}>
-        <DrawerItems {...props} />
+class Content extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      userName: null,
+      userImg: null,
+    };
+  }
+  componentDidMount() {
+    const userId = firebaseService.auth().currentUser.uid;
+    const ref = firebaseService
+      .database()
+      .ref('/Users')
+      .child(userId);
 
-        <TouchableOpacity>
-          <View style={styles.item}>
-            <View style={styles.iconContainer}>
-              <AntDesign
-                name="logout"
-                size={22}
-                color={theme.colors.primaryDark}
-              />
+    ref
+      .once('value')
+      .then(snapshot => {
+        this.setState({
+          userName: snapshot.val().username,
+          userImg: snapshot.val().image,
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+  render() {
+    return (
+      <SafeAreaView
+        style={styles.mainContainer}
+        forceInset={{top: 'always', horizontal: 'never'}}>
+        <View style={styles.drawerHeaderContainer}>
+          <Image source={{uri: this.state.userImg}} style={styles.userIcon} />
+          <Text style={styles.largeText}>{this.state.userName}</Text>
+        </View>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          style={styles.drawerItemsContainerStyle}>
+          <DrawerItems {...this.props} />
+
+          <TouchableOpacity>
+            <View style={styles.item}>
+              <View style={styles.iconContainer}>
+                <AntDesign
+                  name="logout"
+                  size={22}
+                  color={theme.colors.primaryDark}
+                />
+              </View>
+              <Text style={styles.label}>Logout</Text>
             </View>
-            <Text style={styles.label}>Logout</Text>
-          </View>
-        </TouchableOpacity>
-      </ScrollView>
-    </SafeAreaView>
-  );
-};
-
+          </TouchableOpacity>
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+}
+export default Content;
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
