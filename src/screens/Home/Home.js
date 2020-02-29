@@ -15,6 +15,7 @@ import styles from './styles';
 import {Header, Divider, SearchBar} from 'react-native-elements';
 import HeaderLeft from '../../components/HeaderLeft';
 import HeaderCenter from '../../components/HeaderCenter';
+import {NavigationEvents} from 'react-navigation';
 
 import {
   carIcon,
@@ -119,24 +120,33 @@ class Home extends Component {
     };
   }
   componentDidMount = () => {
-    this.toggleLoading();
-    const ref = firebaseService.database().ref('/Products');
-    ref.once('value').then(snapshot => {
-      const newFreshArr = Object.values(snapshot.val());
-
-      this.setState(
-        {
-          data: newFreshArr,
-        },
-        () => {
-          this.toggleLoading();
-          alert(JSON.stringify(this.state.data));
-        },
-      );
+    this.getData();
+    this.focusListner = this.props.navigation.addListener('didFocus', () => {
+      // Update your data
+      this.getData();
     });
   };
+
+  getData = () => {
+    this.toggleLoading();
+    const ref = firebaseService.database().ref('/Products');
+    ref.on('value', snapshot => {
+      if (snapshot.exists) {
+        const newFreshArr = Object.values(snapshot.val());
+        this.setState({
+          data: newFreshArr,
+          loading: false,
+        });
+      }
+    });
+  };
+
   updateSearch = search => {
     this.setState({search: search});
+  };
+
+  componentWillUnmount = () => {
+    this.focusListner.remove();
   };
 
   renderCategories = ({item, index}) => {
@@ -207,6 +217,10 @@ class Home extends Component {
     const {search, categories, products} = this.state;
     return (
       <SafeAreaView style={styles.mainContainer}>
+        <NavigationEvents
+          onDidFocus={this.getData}
+          onWillFocus={() => this.setState({loading: true})}
+        />
         <Header
           leftComponent={<HeaderLeft navigation={this.props.navigation} />}
           centerComponent={<HeaderCenter name="Home" />}
@@ -233,7 +247,7 @@ class Home extends Component {
             }}
           />
         </View>
-        {this.state.loading ? (
+        {this.state.loading && (
           <ActivityIndicator
             animating
             color={theme.colors.primary}
@@ -249,18 +263,17 @@ class Home extends Component {
               backgroundColor: 'transparent',
             }}
           />
-        ) : (
-          <FlatList
-            data={this.state.data}
-            extraData={this.state.data}
-            renderItem={this.renderProducts}
-            keyExtractor={index => {
-              index.toString();
-            }}
-            showsVerticalScrollIndicator={false}
-            numColumns={2}
-          />
         )}
+        <FlatList
+          data={this.state.data}
+          extraData={this.state.data}
+          renderItem={this.renderProducts}
+          keyExtractor={index => {
+            index.toString();
+          }}
+          showsVerticalScrollIndicator={false}
+          numColumns={2}
+        />
       </SafeAreaView>
     );
   }

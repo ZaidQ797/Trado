@@ -367,7 +367,6 @@ class Trade extends Component {
       downloadedUri3,
       downloadedUri4,
     } = this.state;
-    const {navigate} = this.props.navigation;
     const userId = firebaseService.auth().currentUser.uid;
     const params = {
       title: title,
@@ -379,14 +378,13 @@ class Trade extends Component {
       image2: downloadedUri2,
       image3: downloadedUri3,
       image4: downloadedUri4,
+      uid: userId,
     };
     //firebaseService.database().ref('/Users').push(params)
     firebaseService
       .database()
       .ref('/Products')
-      .child(userId)
       .push(params)
-
       .then(res => {
         this.toggleLoading();
         this.setState(
@@ -396,13 +394,13 @@ class Trade extends Component {
             selectedCategory: null,
             selectedCondition: null,
             selectedLocation: null,
-            downloadedUri1: null,
-            downloadedUri2: null,
-            downloadedUri3: null,
-            downloadedUri4: null,
+            selectedImage1: null,
+            selectedImage2: null,
+            selectedImage3: null,
+            selectedImage4: null,
           },
           () => {
-            navigate('Home');
+            this.props.navigation.push('Home');
           },
         );
       })
