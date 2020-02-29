@@ -36,7 +36,7 @@ class ConditionModal extends Component {
     super(props);
     this.state = {
       isModalVisible: false,
-      selectedCondition: '',
+      selectedCondition: null,
       condition: [
         {
           key: 1,
@@ -94,7 +94,9 @@ class ConditionModal extends Component {
     );
   };
   handleSelectedCondition = name => {
-    this.setState({selectedCondition: name});
+    this.setState({selectedCondition: name}, () => {
+      this.props.getSelectedCondition(this.state.selectedCondition);
+    });
     this.toggleModal();
   };
   renderModel = () => {
@@ -150,9 +152,9 @@ class ConditionModal extends Component {
           <Text
             style={[
               styles.textInputStyle,
-              {color: selectedCondition != '' ? '#000' : 'gray'},
+              {color: selectedCondition != null ? '#000' : 'gray'},
             ]}>
-            {selectedCondition != '' ? selectedCondition : 'Select Condition'}
+            {selectedCondition != null ? selectedCondition : 'Select Condition'}
           </Text>
         </TouchableOpacity>
         {this.state.isModalVisible ? this.renderModel() : null}

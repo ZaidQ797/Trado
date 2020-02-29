@@ -119,19 +119,21 @@ class Home extends Component {
     };
   }
   componentDidMount = () => {
-    // this.toggleLoading();
-    // const ref = firebaseService.database().ref('/Procuts');
-    // ref.once('value').then(snapshot => {
-    //   const newFreshArr = Object.values(snapshot.val());
-    //   this.setState(
-    //     {
-    //       data: newFreshArr,
-    //     },
-    //     () => {
-    //       this.toggleLoading();
-    //     },
-    //   );
-    // });
+    this.toggleLoading();
+    const ref = firebaseService.database().ref('/Products');
+    ref.once('value').then(snapshot => {
+      const newFreshArr = Object.values(snapshot.val());
+
+      this.setState(
+        {
+          data: newFreshArr,
+        },
+        () => {
+          this.toggleLoading();
+          alert(JSON.stringify(this.state.data));
+        },
+      );
+    });
   };
   updateSearch = search => {
     this.setState({search: search});
@@ -168,7 +170,7 @@ class Home extends Component {
         }}>
         <ImageBackground
           key={index}
-          source={default_user}
+          source={{uri: item.image4}}
           style={styles.userImageStyle}
           resizeMode={'cover'}>
           <Ionicons
@@ -224,6 +226,7 @@ class Home extends Component {
             horizontal
             showsHorizontalScrollIndicator={false}
             data={categories}
+            extraData={categories}
             renderItem={this.renderCategories}
             keyExtractor={(item, index) => {
               index.toString();
@@ -249,8 +252,9 @@ class Home extends Component {
         ) : (
           <FlatList
             data={this.state.data}
+            extraData={this.state.data}
             renderItem={this.renderProducts}
-            keyExtractor={(item, index) => {
+            keyExtractor={index => {
               index.toString();
             }}
             showsVerticalScrollIndicator={false}

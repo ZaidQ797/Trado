@@ -14,7 +14,16 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: theme.colors.gray,
   },
-
+  primaryButton: {
+    width: '90%',
+    borderRadius: 4,
+    padding: 15,
+    marginVertical: 15,
+    backgroundColor: theme.colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+  },
   textInputStyle: {
     padding: 10,
     width: '90%',

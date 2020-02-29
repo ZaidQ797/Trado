@@ -115,7 +115,6 @@ class Form extends Component {
   handleSignupOnPress = () => {
     const {email, password} = this.state;
     let validation = this.validateData();
-    console.warn(validation);
     if (validation == true) {
       this.toggleLoading();
       firebaseService

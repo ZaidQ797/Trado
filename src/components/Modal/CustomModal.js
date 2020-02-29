@@ -11,17 +11,14 @@ import Modal from 'react-native-modal';
 import theme from '../../theme';
 import styles from './styles';
 import {
-  
   carIcon,
   motorcycle,
- 
   homegarden,
   house,
   kids,
   fashion,
   sport,
   phone,
- 
 } from '../../assets';
 import Entypo from 'react-native-vector-icons/Entypo';
 
@@ -30,8 +27,7 @@ class CustomModal extends Component {
     super(props);
     this.state = {
       isModalVisible: false,
-      price: '',
-      selectedCategory: '',
+      selectedCategory: null,
       categories: [
         {
           key: 1,
@@ -111,7 +107,9 @@ class CustomModal extends Component {
     );
   };
   handleSelectedCategory = name => {
-    this.setState({selectedCategory: name});
+    this.setState({selectedCategory: name}, () => {
+      this.props.getSelectedCategory(this.state.selectedCategory);
+    });
     this.toggleModal();
   };
   renderModel = () => {
@@ -168,9 +166,9 @@ class CustomModal extends Component {
           <Text
             style={[
               styles.textInputStyle,
-              {color: selectedCategory != '' ? '#000' : 'gray'},
+              {color: selectedCategory != null ? '#000' : 'gray'},
             ]}>
-            {selectedCategory != '' ? selectedCategory : 'Select Category'}
+            {selectedCategory != null ? selectedCategory : 'Select Category'}
           </Text>
         </TouchableOpacity>
         {this.state.isModalVisible ? this.renderModel() : null}

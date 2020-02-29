@@ -43,6 +43,15 @@ class Content extends React.Component {
         console.log(err);
       });
   };
+  signOutUser = async () => {
+    const {navigate} = this.props.navigation;
+    try {
+      await firebaseService.auth().signOut();
+      navigate('Auth');
+    } catch (e) {
+      console.log(e);
+    }
+  };
   render() {
     const {userImg} = this.state;
     return (
@@ -50,13 +59,13 @@ class Content extends React.Component {
         style={styles.mainContainer}
         forceInset={{top: 'always', horizontal: 'never'}}>
         <View style={styles.drawerHeaderContainer}>
-          {/* <Image
+          <Image
             source={{
               uri: userImg !== null && userImg !== undefined ? userImg : '',
             }}
             style={styles.userIcon}
-          /> */}
-          <Image source={default_user} style={styles.userIcon} />
+          />
+          {/* <Image source={default_user} style={styles.userIcon} /> */}
           <Text style={styles.largeText}>{this.state.userName}</Text>
         </View>
         <ScrollView
@@ -64,7 +73,10 @@ class Content extends React.Component {
           style={styles.drawerItemsContainerStyle}>
           <DrawerItems {...this.props} />
 
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              this.signOutUser();
+            }}>
             <View style={styles.item}>
               <View style={styles.iconContainer}>
                 <AntDesign

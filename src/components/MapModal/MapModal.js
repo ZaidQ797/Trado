@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Image,
+  PermissionsAndroid,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import theme from '../../theme';
@@ -18,7 +19,7 @@ class MapModal extends Component {
     super(props);
     this.state = {
       isModalVisible: false,
-      locationset: '',
+      locationset: null,
       latitude: 32.082466,
       longitude: 72.669128,
       error: null,
@@ -28,8 +29,10 @@ class MapModal extends Component {
     };
   }
 
-  handleSelectedLocation = () => {
-    // this.setState({selectedLocation: location});
+  handleSelectedLocation = value => {
+    this.setState({locationset: value}, () => {
+      this.props.getSelectedLocation(this.state.locationset);
+    });
     this.toggleModal();
   };
   renderModel = () => {
@@ -39,7 +42,6 @@ class MapModal extends Component {
       latitudeDelta,
       longitudeDelta,
       description,
-      locationset,
     } = this.state;
     return (
       <Modal
@@ -89,7 +91,7 @@ class MapModal extends Component {
             style={styles.primaryButton}
             activeOpacity={1}
             onPress={() => {
-              this.handleSelectedLocation();
+              this.handleSelectedLocation('lat and long');
             }}>
             <Text style={[styles.largeText, {color: 'white'}]}>
               Set Location
@@ -103,6 +105,28 @@ class MapModal extends Component {
   toggleModal = () => {
     this.setState({isModalVisible: !this.state.isModalVisible});
   };
+  // storagePermission = async () => {
+  //   try {
+  //     const granted = await PermissionsAndroid.request(
+  //       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+  //       {
+  //         title: 'Fine Location',
+  //         message: 'App needs access to get current location ',
+  //       },
+  //     );
+  //     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+  //       //Alert.alert('Permission granted', 'Now you can download anything!');
+  //     } else {
+  //       Alert.alert(
+  //         'Permission Denied!',
+  //         'You need to give location  permission to set location',
+  //       );
+  //     }
+  //   } catch (err) {
+  //     console.warn(err);
+  //   }
+  // };
+
   render() {
     const {locationset} = this.state;
 
@@ -116,9 +140,9 @@ class MapModal extends Component {
           <Text
             style={[
               styles.textInputStyle,
-              {color: locationset != '' ? '#000' : 'gray'},
+              {color: locationset != null ? '#000' : 'gray'},
             ]}>
-            {locationset != '' ? locationset : 'Set Location'}
+            {locationset != null ? locationset : 'Set Location'}
           </Text>
         </TouchableOpacity>
         {this.state.isModalVisible ? this.renderModel() : null}
