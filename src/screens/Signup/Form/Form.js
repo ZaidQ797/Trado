@@ -112,25 +112,23 @@ class Form extends Component {
   };
 
   // User signUp method
-  handleSignupOnPress = () => {
+  handleSignupOnPress = async () => {
     const {email, password} = this.state;
-    let validation = this.validateData();
-    if (validation == true) {
-      this.toggleLoading();
-      firebaseService
-        .auth()
-        .createUserWithEmailAndPassword(email, password)
-        .then(() => {
-          // console.warn("User SignUp Successfully");
+    if (this.validateData()) {
+      try {
+        this.setState({loading: true});
+        const res = await firebaseService
+          .auth()
+          .createUserWithEmailAndPassword(email, password);
+        if (res) {
           this.uploadImage();
-        })
-        .catch(error => {
-          this.toggleLoading();
-          var errorCode = error.code;
-          var errorMessage = error.message;
-          alert(errorMessage);
-          // console.warn("ERROR => ", errorCode, errorMessage);
-        });
+        }
+      } catch (err) {
+        this.setState({loading: false});
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        alert(errorMessage);
+      }
     }
   };
 
@@ -230,60 +228,36 @@ class Form extends Component {
   };
 
   // First Upload image and download Image URI then call saveUserToDB()...
-  uploadImage = () => {
-    return new Promise((resolve, reject) => {
+  uploadImage = async () => {
+    try {
       const {uri} = this.state.image;
-      //  file:///fkaskdjfhaskdfhasdkfhasdfhajsdkfhasdkfha.jpg
       const uploadUri =
         Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
-      console.log('====================================');
-      console.log(uploadUri);
-      console.log('====================================');
-      //return;
-      // alert(uploadUri);
-      // return;
-      let uploadBlob = '';
       const imageRef = firebaseService
         .storage()
         .ref('images')
         .child(uuid.v4());
-
-      fs.readFile(uploadUri, 'base64')
-        .then(data => {
-          return Blob.build(data, {type: `${this.state.image.type};BASE64`});
-        })
-        .then(blob => {
-          uploadBlob = blob;
-          console.log('====================================');
-          console.log(uploadBlob);
-          console.log('====================================');
-          return imageRef.put(blob, {contentType: this.state.image.type});
-        })
-        .then(() => {
-          uploadBlob.close();
-          const downnloadImageURI = imageRef.getDownloadURL().then(url => {
-            const imageUri = url;
-            this.saveUserInfo(imageUri);
-          });
-          return downnloadImageURI;
-        })
-        .then(url => {
-          resolve(url);
-        })
-        .catch(error => {
-          this.toggleLoading();
-          alert(error);
-          reject(error);
-        });
-    });
+      const data = await fs.readFile(uploadUri, 'base64');
+      const blob = await Blob.build(data, {
+        type: `${this.state.image.type};BASE64`,
+      });
+      const res = await imageRef.put(blob, {
+        contentType: this.state.image.type,
+      });
+      await blob.close();
+      const downloadedURL = await imageRef.getDownloadURL();
+      this.saveUserInfo(downloadedURL);
+    } catch (err) {
+      console.log(err);
+    }
   };
-  saveUserInfo = imgUri => {
+  saveUserInfo = imgURL => {
     const {userName, email, password} = this.state;
     const {navigate} = this.props.navigation;
     const userId = firebaseService.auth().currentUser.uid;
     const params = {
       uid: userId,
-      image: imgUri,
+      image: imgURL,
       username: userName,
       email: email,
       password: password,
@@ -296,7 +270,8 @@ class Form extends Component {
       .set(params)
       .then(res => {
         this.toggleLoading();
-        this.props.navigation.navigate('Login');
+        console.log('in the method');
+        navigate('Login');
       })
       .catch(err => {
         alert(err);

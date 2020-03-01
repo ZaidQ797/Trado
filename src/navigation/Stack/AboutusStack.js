@@ -5,13 +5,13 @@ import AboutUs from '../../screens/AboutUs';
 
 const AbouUsStack = createStackNavigator(
   {
-    Home: {
+    AboutUs: {
       screen: AboutUs,
       navigationOptions: {
         header: null,
       },
     },
   },
-  {initialRouteName: 'Home'},
+  {initialRouteName: 'AboutUs'},
 );
 export default AbouUsStack;

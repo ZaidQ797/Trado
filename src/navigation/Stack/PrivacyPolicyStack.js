@@ -5,13 +5,13 @@ import PrivacyPolicy from '../../screens/PrivacyPolicy';
 
 const PrivacyPolicyStack = createStackNavigator(
   {
-    Home: {
+    PrivacyPolicy: {
       screen: PrivacyPolicy,
       navigationOptions: {
         header: null,
       },
     },
   },
-  {initialRouteName: 'Home'},
+  {initialRouteName: 'PrivacyPolicy'},
 );
 export default PrivacyPolicyStack;

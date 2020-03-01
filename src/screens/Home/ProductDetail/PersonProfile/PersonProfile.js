@@ -17,7 +17,7 @@ import theme from '../../../../theme';
 import Trading from './components/Trading';
 import TradeDone from './components/TradeDone';
 import Reviews from './components/Reviews';
-
+import firebaseService from '../../../../service/firebase';
 class PersonProfile extends Component {
   constructor(props) {
     super(props);
@@ -27,6 +27,45 @@ class PersonProfile extends Component {
       reviews: false,
     };
   }
+  // componentDidMount = () => {
+  //   this.getData();
+  //   this.focusListner = this.props.navigation.addListener('didFocus', () => {
+  //     // Update your data
+  //     this.getData();
+  //   });
+  // };
+
+  // getData = () => {
+  //   this.toggleLoading();
+  //   const uid = this.props.navigation.getParam('uid');
+  //   const ref = firebaseService
+  //     .database()
+  //     .ref('/Products')
+  //     .child(uid);
+  //   ref.on('value', snapshot => {
+  //     const values = snapshot.val();
+  //     alert(values);
+  //     return;
+  //     if (values !== null) {
+  //       const newFreshArr = Object.values(values);
+  //       this.setState({
+  //         data: newFreshArr,
+  //         loading: false,
+  //       });
+  //     } else {
+  //       this.setState({
+  //         data: [],
+  //         loading: false,
+  //       });
+  //     }
+  //   });
+  // };
+  // componentWillUnmount = () => {
+  //   this.focusListner.remove();
+  // };
+  toggleLoading = () => {
+    this.setState({loading: !this.state.loading});
+  };
   //change tabs
   changeTab = index => {
     if (index === 1) {
@@ -54,19 +93,22 @@ class PersonProfile extends Component {
 
   render() {
     const {trading, tradeDone, reviews} = this.state;
+    const userName = this.props.navigation.getParam('username');
+    const userImg = this.props.navigation.getParam('userImg');
+    const userLocation = this.props.navigation.getParam('location');
     return (
       <View style={styles.mainContainer}>
         <Header
           leftComponent={
             <HeaderLeft navigation={this.props.navigation} icon={'back'} />
           }
-          centerComponent={<HeaderCenter name="Prodcut Details" />}
+          centerComponent={<HeaderCenter name="Person Profile" />}
           containerStyle={styles.headerStyle}
         />
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.userInfo}>
-            <Image source={user} style={styles.userImageSize} />
-            <Text style={styles.largeText}>Zaid Qureshi</Text>
+            <Image source={{uri: userImg}} style={styles.userImageSize} />
+            <Text style={styles.largeText}>{userName}</Text>
             <View style={{flexDirection: 'row'}}>
               <MaterialIcons
                 name="location-on"
@@ -74,7 +116,7 @@ class PersonProfile extends Component {
                 color={theme.colors.text}
                 style={{alignSelf: 'center'}}
               />
-              <Text style={styles.largeText}>Lahore,PK</Text>
+              <Text style={styles.largeText}>{userLocation}</Text>
             </View>
             <Divider style={styles.dividerStyle} />
           </View>

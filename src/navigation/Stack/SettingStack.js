@@ -5,13 +5,13 @@ import Settings from '../../screens/Settings';
 
 const SettingStack = createStackNavigator(
   {
-    Home: {
+    Settings: {
       screen: Settings,
       navigationOptions: {
         header: null,
       },
     },
   },
-  {initialRouteName: 'Home'},
+  {initialRouteName: 'Settings'},
 );
 export default SettingStack;

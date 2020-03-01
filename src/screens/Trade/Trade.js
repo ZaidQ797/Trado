@@ -46,6 +46,7 @@ class Trade extends Component {
       downloadedUri4: null,
       title: null,
       price: null,
+      description: null,
       isModalVisible: false,
       selectedCondition: null,
       selectedCategory: null,
@@ -359,6 +360,7 @@ class Trade extends Component {
     const {
       title,
       price,
+      description,
       selectedLocation,
       selectedCondition,
       selectedCategory,
@@ -371,6 +373,7 @@ class Trade extends Component {
     const params = {
       title: title,
       price: price,
+      description: description,
       condition: selectedCondition,
       category: selectedCategory,
       location: selectedLocation,
@@ -391,6 +394,7 @@ class Trade extends Component {
           {
             title: null,
             price: null,
+            description: null,
             selectedCategory: null,
             selectedCondition: null,
             selectedLocation: null,
@@ -413,6 +417,7 @@ class Trade extends Component {
     const {
       title,
       price,
+      description,
       selectedImage1,
       selectedImage2,
       selectedImage3,
@@ -482,6 +487,15 @@ class Trade extends Component {
           fontFamily: Fonts.GoogleSansMedium,
         });
         return false;
+      }
+      if (description === null) {
+        Snackbar.show({
+          text: 'Kindly add your product description',
+          duration: Snackbar.LENGTH_SHORT,
+          backgroundColor: theme.colors.primary,
+          fontFamily: Fonts.GoogleSansMedium,
+        });
+        return false;
       } else return true;
     }
   };
@@ -493,6 +507,7 @@ class Trade extends Component {
       selectedImage4,
       title,
       price,
+      description,
     } = this.state;
     return (
       <View style={{flex: 1}}>
@@ -613,6 +628,17 @@ class Trade extends Component {
           getSelectedLocation={selectedLocation => {
             this.setState({selectedLocation: selectedLocation});
           }}
+        />
+        <TextInput
+          style={styles.textInputStyle}
+          placeholder={'Product Description'}
+          value={description}
+          multiline={true}
+          textAlignVertical="top"
+          placeholderTextColor={'gray'}
+          onChangeText={description =>
+            this.setState({description: description})
+          }
         />
         <TouchableOpacity
           style={styles.primaryButton}

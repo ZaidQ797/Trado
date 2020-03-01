@@ -5,13 +5,13 @@ import Trade from '../../screens/Trade';
 
 const TradeStack = createStackNavigator(
   {
-    Trade: {
+    Trades: {
       screen: Trade,
       navigationOptions: {
         header: null,
       },
     },
   },
-  {initialRouteName: 'Trade'},
+  {initialRouteName: 'Trades'},
 );
 export default TradeStack;

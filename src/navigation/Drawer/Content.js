@@ -61,11 +61,13 @@ class Content extends React.Component {
         <View style={styles.drawerHeaderContainer}>
           <Image
             source={{
-              uri: userImg !== null && userImg !== undefined ? userImg : '',
+              uri:
+                String(userImg) !== null && userImg !== undefined
+                  ? this.state.userImg
+                  : default_user,
             }}
             style={styles.userIcon}
           />
-          {/* <Image source={default_user} style={styles.userIcon} /> */}
           <Text style={styles.largeText}>{this.state.userName}</Text>
         </View>
         <ScrollView

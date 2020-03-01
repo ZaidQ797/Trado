@@ -18,8 +18,8 @@ import {bicycle1, bicycle2, bicycle3, user} from '../../../assets';
 import theme from '../../../theme';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import MapView, { PROVIDER_GOOGLE, Marker} from 'react-native-maps';
-
+import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
+import firebaseService from '../../../service/firebase';
 class ProductDetail extends Component {
   constructor(props) {
     super(props);
@@ -31,32 +31,41 @@ class ProductDetail extends Component {
       longitudeDelta: 0.0121,
       description: 'Sargodha',
       isFavorite: false,
-      swiperImages: [
-        {id: 1, image: bicycle1},
-        {id: 2, image: bicycle2},
-        {id: 3, image: bicycle3},
-      ],
+      swiperImages: [],
+      userName: null,
+      userImg: null,
     };
   }
-  // componentDidMount() {
-  //   navigator.geolocation.getCurrentPosition(
-  //     position => {
-  //       this.setState({
-  //         latitude: position.coords.latitude,
-  //         longitude: position.coords.longitude,
-
-  //         error: null,
-  //       });
-  //     },
-  //     error => this.setState({error: error.message}),
-  //     {enableHighAccuracy: false, timeout: 200000},
-  //   );
-  // }
+  componentDidMount = () => {
+    const item = this.props.navigation.getParam('item');
+    const ref = firebaseService
+      .database()
+      .ref('/Users')
+      .child(item.uid);
+    ref
+      .once('value')
+      .then(snapshot => {
+        this.setState({
+          userName: snapshot.val().username,
+          userImg: snapshot.val().image,
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
   toggleFavorite = () => {
     this.setState({isFavorite: !this.state.isFavorite});
   };
   render() {
-    const id = this.props.navigation.getParam('id');
+    const item = this.props.navigation.getParam('item');
+    this.state.swiperImages.push(
+      item.image1,
+      item.image2,
+      item.image3,
+      item.image4,
+    );
+
     const {
       latitude,
       longitude,
@@ -83,7 +92,7 @@ class ProductDetail extends Component {
           {swiperImages &&
             swiperImages.map(item => {
               return (
-                <ImageBackground style={styles.slide1} source={item.image}>
+                <ImageBackground style={styles.slide1} source={item}>
                   <View
                     style={[
                       styles.slide1,
@@ -112,7 +121,8 @@ class ProductDetail extends Component {
         </Swiper>
         <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
           <Text style={[styles.largeText, {width: '100%'}]}>
-            Orignal Audi Bicycle with auto padal 2020 Modal{'   '}
+            {item.title}
+            {'   '}
             {
               <Text
                 style={[
@@ -123,16 +133,11 @@ class ProductDetail extends Component {
                     alignSelf: 'flex-end',
                   },
                 ]}>
-                1800 PKR
+                {item.price} PKR
               </Text>
             }
           </Text>
-          <Text style={styles.mediumText}>
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since the 1500s, when an unknown printer took a galley of type
-            and scrambled
-          </Text>
+          <Text style={styles.mediumText}>{item.description}</Text>
           <View
             style={{
               justifyContent: 'space-between',
@@ -150,7 +155,7 @@ class ProductDetail extends Component {
                       alignSelf: 'flex-end',
                     },
                   ]}>
-                  Good
+                  {item.condition}
                 </Text>
               }
             </Text>
@@ -166,7 +171,12 @@ class ProductDetail extends Component {
           <TouchableOpacity
             activeOpacity={1}
             onPress={() => {
-              this.props.navigation.navigate('PersonProfile');
+              this.props.navigation.navigate('PersonProfile', {
+                userImg: this.state.userImg,
+                username: this.state.userName,
+                location: item.location,
+                uid: item.uid,
+              });
             }}
             style={[
               styles.horizontalContainer,
@@ -175,12 +185,12 @@ class ProductDetail extends Component {
               },
             ]}>
             <Image
-              source={user}
+              source={{uri: this.state.userImg}}
               resizeMode={'contain'}
               style={styles.circularImageStyle}
             />
             <View>
-              <Text style={styles.largeText}>Imran Ali</Text>
+              <Text style={styles.largeText}>{this.state.userName}</Text>
               <Rating
                 imageSize={15}
                 readonly

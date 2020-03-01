@@ -131,10 +131,16 @@ class Home extends Component {
     this.toggleLoading();
     const ref = firebaseService.database().ref('/Products');
     ref.on('value', snapshot => {
-      if (snapshot.exists) {
-        const newFreshArr = Object.values(snapshot.val());
+      const values = snapshot.val();
+      if (values !== null) {
+        const newFreshArr = Object.values(values);
         this.setState({
           data: newFreshArr,
+          loading: false,
+        });
+      } else {
+        this.setState({
+          data: [],
           loading: false,
         });
       }
@@ -176,7 +182,7 @@ class Home extends Component {
         style={styles.productContainer}
         activeOpacity={1}
         onPress={() => {
-          this.props.navigation.navigate('ProductDetail', {id: index});
+          this.props.navigation.navigate('ProductDetail', {item: item});
         }}>
         <ImageBackground
           key={index}
@@ -264,16 +270,21 @@ class Home extends Component {
             }}
           />
         )}
-        <FlatList
-          data={this.state.data}
-          extraData={this.state.data}
-          renderItem={this.renderProducts}
-          keyExtractor={index => {
-            index.toString();
-          }}
-          showsVerticalScrollIndicator={false}
-          numColumns={2}
-        />
+
+        {!this.state.loading && this.state.data.length === 0 ? (
+          <Text>No Data Available</Text>
+        ) : (
+          <FlatList
+            data={this.state.data}
+            extraData={this.state.data}
+            renderItem={this.renderProducts}
+            keyExtractor={index => {
+              index.toString();
+            }}
+            showsVerticalScrollIndicator={false}
+            numColumns={2}
+          />
+        )}
       </SafeAreaView>
     );
   }

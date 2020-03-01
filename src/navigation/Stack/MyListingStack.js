@@ -5,13 +5,13 @@ import MyListing from '../../screens/MyListing';
 
 const MyListingStack = createStackNavigator(
   {
-    Home: {
+    MyListing: {
       screen: MyListing,
       navigationOptions: {
         header: null,
       },
     },
   },
-  {initialRouteName: 'Home'},
+  {initialRouteName: 'MyListing'},
 );
 export default MyListingStack;

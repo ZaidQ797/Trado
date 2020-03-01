@@ -5,13 +5,13 @@ import Notifications from '../../screens/Notifications';
 
 const NotificationStack = createStackNavigator(
   {
-    Home: {
+    Notifications: {
       screen: Notifications,
       navigationOptions: {
         header: null,
       },
     },
   },
-  {initialRouteName: 'Home'},
+  {initialRouteName: 'Notifications'},
 );
 export default NotificationStack;

@@ -5,13 +5,13 @@ import Messages from '../../screens/Messages';
 
 const MessageStack = createStackNavigator(
   {
-    Home: {
+    Messages: {
       screen: Messages,
       navigationOptions: {
         header: null,
       },
     },
   },
-  {initialRouteName: 'Home'},
+  {initialRouteName: 'Messages'},
 );
 export default MessageStack;

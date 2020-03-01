@@ -5,13 +5,13 @@ import Profile from '../../screens/Profile';
 
 const ProfileStack = createStackNavigator(
   {
-    Home: {
+    Profile: {
       screen: Profile,
       navigationOptions: {
         header: null,
       },
     },
   },
-  {initialRouteName: 'Home'},
+  {initialRouteName: 'Profile'},
 );
 export default ProfileStack;
