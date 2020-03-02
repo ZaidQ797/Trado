@@ -258,7 +258,7 @@ class Form extends Component {
     const params = {
       uid: userId,
       image: imgURL,
-      username: userName,
+      name: userName,
       email: email,
       password: password,
     };

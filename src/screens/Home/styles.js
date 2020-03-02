@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import {StyleSheet, Dimensions} from 'react-native';
 import theme from '../../theme';
 import {Fonts} from '../../utils/Fonts';
 
@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
   },
   largeText: {
     fontFamily: Fonts.GoogleSansMedium,
-    fontSize: 16,
+    fontSize: 15,
     color: theme.colors.secondary,
   },
   mediumText: {
@@ -40,6 +40,7 @@ const styles = StyleSheet.create({
     borderRightWidth: 1.5,
     borderColor: '#E8E8E8',
     borderRadius: 5,
+    fontFamily: Fonts.GoogleSansRegular,
   },
   categoryStyle: {
     borderRadius: 60,
@@ -50,10 +51,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     margin: 7,
+    alignSelf: 'center',
   },
   iconStyle: {
-    height: 30,
-    width: 30,
+    height: 50,
+    width: 50,
+    borderRadius: 50,
   },
   heartStyle: {
     alignSelf: 'flex-end',
@@ -76,6 +79,15 @@ const styles = StyleSheet.create({
     height: 170,
     width: '100%',
     borderRadius: 5,
+  },
+  catTitle: {
+    marginVertical: 2,
+    marginHorizontal: 2,
+    textAlign: 'center',
+    fontFamily: Fonts.GoogleSansRegular,
+  },
+  catContainer: {
+    width: Dimensions.get('window').width / 5,
   },
 });
 export default styles;

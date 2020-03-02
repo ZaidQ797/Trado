@@ -44,6 +44,7 @@ class Home extends Component {
       search: '',
       loading: false,
       data: [],
+      filterData: [],
       categories: [
         {
           key: 0,
@@ -117,6 +118,8 @@ class Home extends Component {
         {id: 4, image: bicycle, selected: false},
         {id: 5, image: clock, selected: false},
       ],
+      categories: [],
+      isRefreshing: false,
     };
   }
   componentDidMount = () => {
@@ -127,7 +130,27 @@ class Home extends Component {
     });
   };
 
+  getCategories = () => {
+    const ref = firebaseService.database().ref('/Categories');
+    ref.on('value', snapshot => {
+      const val = snapshot.val();
+      if (val !== null) {
+        const newFreshArrr = Object.values(val);
+        this.setState({
+          categories: newFreshArrr,
+          loading: false,
+        });
+      } else {
+        this.setState({
+          categories: [],
+          loading: false,
+        });
+      }
+    });
+  };
+
   getData = () => {
+    this.getCategories();
     this.toggleLoading();
     const ref = firebaseService.database().ref('/Products');
     ref.on('value', snapshot => {
@@ -136,57 +159,77 @@ class Home extends Component {
         const newFreshArr = Object.values(values);
         this.setState({
           data: newFreshArr,
+          filterData: newFreshArr,
           loading: false,
+          isRefreshing: false,
         });
       } else {
         this.setState({
           data: [],
           loading: false,
+          isRefreshing: false,
         });
       }
     });
   };
 
   updateSearch = search => {
-    this.setState({search: search});
+    const searchData = this.state.filterData.filter(item =>
+      item.name.toUpperCase().includes(search.toUpperCase()),
+    );
+    this.setState({search: search, data: searchData});
   };
 
   componentWillUnmount = () => {
     this.focusListner.remove();
   };
 
+  onCategoryPress = catItem => {
+    const {cat_id} = catItem;
+    const filterProd = this.state.filterData.filter(
+      item => item.cat_id === cat_id,
+    );
+    this.setState({
+      data: filterProd,
+    });
+  };
+
   renderCategories = ({item, index}) => {
     const {categoriesColors} = this.state;
     const categoryColor = categoriesColors[index % categoriesColors.length];
     return (
-      <TouchableOpacity
-        activeOpacity={1}
-        style={[styles.categoryStyle, {backgroundColor: categoryColor}]}
-        onPress={() => {
-          this.props.navigation.navigate('FilteredCategory', {
-            item: item,
-          });
-        }}>
-        <Image
-          source={item.image}
-          resizeMode={'contain'}
-          style={styles.iconStyle}
-        />
-      </TouchableOpacity>
+      <View style={styles.catContainer}>
+        <TouchableOpacity
+          activeOpacity={1}
+          style={[styles.categoryStyle, {backgroundColor: categoryColor}]}
+          onPress={() => {
+            this.onCategoryPress(item);
+          }}>
+          <Image
+            source={{uri: item.image}}
+            resizeMode={'cover'}
+            style={styles.iconStyle}
+          />
+        </TouchableOpacity>
+        <Text numberOfLines={1} style={styles.catTitle}>
+          {item.name}
+        </Text>
+      </View>
     );
   };
 
   renderProducts = ({item, index}) => {
     return (
       <TouchableOpacity
+        key={index}
         style={styles.productContainer}
         activeOpacity={1}
         onPress={() => {
-          this.props.navigation.navigate('ProductDetail', {item: item});
+          this.props.navigation.navigate('ProductDetail', {item});
         }}>
         <ImageBackground
           key={index}
-          source={{uri: item.image4}}
+          source={{uri: item.images[0]}}
           style={styles.userImageStyle}
           resizeMode={'cover'}>
           <Ionicons
@@ -199,6 +242,14 @@ class Home extends Component {
             style={styles.heartStyle}
           />
         </ImageBackground>
+        <Text
+          style={{
+            margin: 5,
+            color: '#000',
+            fontFamily: Fonts.GoogleSansRegular,
+          }}>
+          {item.name}
+        </Text>
       </TouchableOpacity>
     );
   };
@@ -219,6 +270,20 @@ class Home extends Component {
   toggleLoading = () => {
     this.setState({loading: !this.state.loading});
   };
+
+  onRefresh = () => {
+    this.setState(
+      {
+        isRefreshing: true,
+      },
+      () => {
+        setTimeout(() => {
+          this.getData();
+        }, 1000);
+      },
+    );
+  };
+
   render() {
     const {search, categories, products} = this.state;
     return (
@@ -235,6 +300,7 @@ class Home extends Component {
         <SearchBar
           placeholder="Search"
           value={search}
+          inputStyle={{fontFamily: Fonts.GoogleSansRegular}}
           containerStyle={styles.searchContainer}
           inputContainerStyle={styles.inputStyle}
           onChangeText={search => {
@@ -272,12 +338,17 @@ class Home extends Component {
         )}
 
         {!this.state.loading && this.state.data.length === 0 ? (
-          <Text>No Data Available</Text>
+          <View
+            style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+            <Text>No Data Available</Text>
+          </View>
         ) : (
           <FlatList
             data={this.state.data}
             extraData={this.state.data}
             renderItem={this.renderProducts}
+            refreshing={this.state.isRefreshing}
+            onRefresh={this.onRefresh}
             keyExtractor={index => {
               index.toString();
             }}

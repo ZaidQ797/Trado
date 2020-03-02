@@ -3,39 +3,24 @@ import {View, StyleSheet, Image, TouchableWithoutFeedback} from 'react-native';
 import {drawer, back} from '../../assets';
 import theme from '../../theme';
 import {Button} from 'react-native-elements';
+import Entypo from 'react-native-vector-icons/Entypo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const HeaderLeft = ({navigation, icon}) => {
   return (
-    <View>
+    <TouchableWithoutFeedback
+      activeOpacity={0}
+      style={styles.drawerIcon}
+      onPress={() => {
+        icon === 'back' ? navigation.goBack() : navigation.openDrawer();
+      }}>
       {icon === 'back' ? (
-        <TouchableWithoutFeedback
-          activeOpacity={0}
-          style={styles.drawerIcon}
-          onPress={() => {
-            navigation.goBack();
-          }}>
-          <Image
-            source={back}
-            resizeMode={'contain'}
-            style={styles.drawerIcon}
-          />
-        </TouchableWithoutFeedback>
+        <Ionicons name={'ios-arrow-back'} size={30} />
       ) : (
-        <TouchableWithoutFeedback
-          activeOpacity={0}
-          style={styles.drawerIcon}
-          onPress={() => {
-            navigation.openDrawer();
-          }}>
-          <Image
-            source={drawer}
-            resizeMode={'contain'}
-            style={styles.drawerIcon}
-          />
-        </TouchableWithoutFeedback>
+        // <Image source={back} resizeMode={'contain'} style={styles.drawerIcon} />
+        <Entypo name={'menu'} size={30} />
       )}
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 

@@ -27,42 +27,66 @@ class PersonProfile extends Component {
       reviews: false,
     };
   }
-  // componentDidMount = () => {
-  //   this.getData();
-  //   this.focusListner = this.props.navigation.addListener('didFocus', () => {
-  //     // Update your data
-  //     this.getData();
-  //   });
-  // };
+  componentDidMount = () => {
+    this.getData();
+    this.focusListner = this.props.navigation.addListener('didFocus', () => {
+      // Update your data
+      this.getData();
+    });
+  };
 
-  // getData = () => {
-  //   this.toggleLoading();
-  //   const uid = this.props.navigation.getParam('uid');
-  //   const ref = firebaseService
-  //     .database()
-  //     .ref('/Products')
-  //     .child(uid);
-  //   ref.on('value', snapshot => {
-  //     const values = snapshot.val();
-  //     alert(values);
-  //     return;
-  //     if (values !== null) {
-  //       const newFreshArr = Object.values(values);
-  //       this.setState({
-  //         data: newFreshArr,
-  //         loading: false,
-  //       });
-  //     } else {
-  //       this.setState({
-  //         data: [],
-  //         loading: false,
-  //       });
-  //     }
-  //   });
-  // };
-  // componentWillUnmount = () => {
-  //   this.focusListner.remove();
-  // };
+  getData = () => {
+    this.toggleLoading();
+    const uid = this.props.navigation.getParam('uid');
+
+    const newArr = [];
+    const ref = firebaseService.database().ref('/Products');
+
+    ref.on('value', snapshot => {
+      const values = snapshot.val();
+      if (values !== null) {
+        const newFreshArr = Object.values(values);
+
+        // for (let item in newFreshArr) {
+        //   console.log(item);
+        // }:
+
+        const userID = firebaseService.auth().currentUser.uid;
+
+        const uidProducts = newFreshArr.map(item => {
+          if (item.uid === userID) {
+            return item;
+          }
+          return;
+        });
+
+        alert(uidProducts);
+
+        // newFreshArr.forEach((item, index) => {
+        //   console.log(item);
+        // });
+
+        // for (let i = 0; i <= newFreshArr.length; i++) {
+        //   if (newFreshArr[1].uid === uid) {
+        //     newArr.push(newFreshArr[i]);
+        //   }
+        // }
+
+        this.setState({
+          data: newFreshArr,
+          loading: false,
+        });
+      } else {
+        this.setState({
+          data: [],
+          loading: false,
+        });
+      }
+    });
+  };
+  componentWillUnmount = () => {
+    this.focusListner.remove();
+  };
   toggleLoading = () => {
     this.setState({loading: !this.state.loading});
   };

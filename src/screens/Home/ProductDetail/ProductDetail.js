@@ -38,6 +38,7 @@ class ProductDetail extends Component {
   }
   componentDidMount = () => {
     const item = this.props.navigation.getParam('item');
+    return;
     const ref = firebaseService
       .database()
       .ref('/Users')
@@ -59,12 +60,6 @@ class ProductDetail extends Component {
   };
   render() {
     const item = this.props.navigation.getParam('item');
-    this.state.swiperImages.push(
-      item.image1,
-      item.image2,
-      item.image3,
-      item.image4,
-    );
 
     const {
       latitude,
@@ -89,10 +84,10 @@ class ProductDetail extends Component {
           containerStyle={styles.wrapper}
           dotColor="white"
           activeDotColor={theme.colors.primary}>
-          {swiperImages &&
-            swiperImages.map(item => {
+          {item &&
+            item.images.map(item => {
               return (
-                <ImageBackground style={styles.slide1} source={item}>
+                <ImageBackground style={styles.slide1} source={{uri: item}}>
                   <View
                     style={[
                       styles.slide1,
