@@ -122,7 +122,7 @@ class Form extends Component {
         .auth()
         .createUserWithEmailAndPassword(email, password)
         .then(() => {
-          // console.warn("User SignUp Successfully");
+          console.warn('User SignUp Successfully');
           this.uploadImage();
         })
         .catch(error => {
@@ -232,13 +232,14 @@ class Form extends Component {
 
   // First Upload image and download Image URI then call saveUserToDB()...
   uploadImage = () => {
+    console.warn('In upload image');
     return new Promise((resolve, reject) => {
       const {uri} = this.state.image;
       //  file:///fkaskdjfhaskdfhasdkfhasdfhajsdkfhasdkfha.jpg
       const uploadUri =
         Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
       console.log('====================================');
-      console.log(uploadUri);
+      console.warn(uploadUri);
       console.log('====================================');
       //return;
       // alert(uploadUri);
@@ -255,16 +256,14 @@ class Form extends Component {
         })
         .then(blob => {
           uploadBlob = blob;
-          console.log('====================================');
-          console.log(uploadBlob);
-          console.log('====================================');
           return imageRef.put(blob, {contentType: this.state.image.type});
         })
         .then(() => {
           uploadBlob.close();
           const downnloadImageURI = imageRef.getDownloadURL().then(url => {
-            const imageUri = url;
-            this.saveUserInfo(imageUri);
+            console.warn('image uploaded Successfully');
+            console.warn(url);
+            this.saveUserInfo(url);
           });
           return downnloadImageURI;
         })
@@ -296,6 +295,7 @@ class Form extends Component {
       .child(userId)
       .set(params)
       .then(res => {
+        console.warn('In register final for moving to login');
         this.toggleLoading();
         this.props.navigation.navigate('Login');
       })

@@ -44,7 +44,7 @@ class Home extends Component {
       search: '',
       loading: false,
       data: [],
-      filterData: [],
+      backup: [],
       categories: [],
       categoriesColors: [
         '#317FB7',
@@ -104,13 +104,14 @@ class Home extends Component {
         const newFreshArr = Object.values(values);
         this.setState({
           data: newFreshArr,
-          filterData: newFreshArr,
+          backup: newFreshArr,
           loading: false,
           isRefreshing: false,
         });
       } else {
         this.setState({
           data: [],
+          backup: [],
           loading: false,
           isRefreshing: false,
         });
@@ -119,10 +120,12 @@ class Home extends Component {
   };
 
   updateSearch = search => {
-    const searchData = this.state.filterData.filter(item =>
-      item.name.toUpperCase().includes(search.toUpperCase()),
-    );
-    this.setState({search: search, data: searchData});
+    this.setState({
+      data: this.state.backup.filter(obj =>
+        obj.name.toUpperCase().includes(search.toUpperCase()),
+      ),
+      search,
+    });
   };
 
   componentWillUnmount = () => {
@@ -131,11 +134,8 @@ class Home extends Component {
 
   onCategoryPress = catItem => {
     const {cat_id} = catItem;
-    const filterProd = this.state.filterData.filter(
-      item => item.cat_id === cat_id,
-    );
     this.setState({
-      data: filterProd,
+      data: this.state.backup.filter(item => item.cat_id === cat_id),
     });
   };
 
@@ -149,7 +149,8 @@ class Home extends Component {
           style={[styles.categoryStyle, {backgroundColor: categoryColor}]}
           onPress={() => {
             this.onCategoryPress(item);
-          }}>
+          }}
+          key={index}>
           <Image
             source={{uri: item.image}}
             resizeMode={'contain'}
@@ -273,7 +274,7 @@ class Home extends Component {
         ) : (
           <FlatList
             data={this.state.data}
-            extraData={this.state.data}
+            extraData={this.state}
             renderItem={this.renderProducts}
             refreshing={this.state.isRefreshing}
             onRefresh={this.onRefresh}

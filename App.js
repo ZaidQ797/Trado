@@ -4,7 +4,7 @@ import {ThemeProvider} from 'react-native-elements';
 import theme from './src/theme';
 //Main Nav
 import MainNav from './src/navigation';
-console.disableYellowBox = true;
+console.disableYellowBox = false;
 class App extends Component {
   constructor(props) {
     super(props);
