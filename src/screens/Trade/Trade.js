@@ -44,7 +44,8 @@ class Trade extends Component {
       downloadedUri2: null,
       downloadedUri3: null,
       downloadedUri4: null,
-      title: null,
+      selectedCurrency: null,
+      name: null,
       price: null,
       description: null,
       isModalVisible: false,
@@ -59,6 +60,14 @@ class Trade extends Component {
         {id: 3, name: 'Good'},
         {id: 4, name: 'Fair'},
         {id: 5, name: 'Poor'},
+      ],
+      currencies: [
+        {id: 0, name: 'Currency'},
+        {id: 1, name: 'PKR'},
+        {id: 2, name: '$'},
+        {id: 3, name: 'EURO'},
+        {id: 4, name: 'SAR'},
+        {id: 5, name: 'AED'},
       ],
     };
   }
@@ -358,11 +367,12 @@ class Trade extends Component {
   //Save Product
   saveUserProduct = () => {
     const {
-      title,
+      name,
       price,
       description,
       selectedLocation,
       selectedCondition,
+      selectedCurrency,
       selectedCategory,
       downloadedUri1,
       downloadedUri2,
@@ -371,16 +381,14 @@ class Trade extends Component {
     } = this.state;
     const userId = firebaseService.auth().currentUser.uid;
     const params = {
-      title: title,
+      name: name,
       price: price,
+      currency: selectedCurrency,
       description: description,
       condition: selectedCondition,
       category: selectedCategory,
       location: selectedLocation,
-      image1: downloadedUri1,
-      image2: downloadedUri2,
-      image3: downloadedUri3,
-      image4: downloadedUri4,
+      images: [downloadedUri1, downloadedUri2, downloadedUri3, downloadedUri4],
       uid: userId,
     };
     //firebaseService.database().ref('/Users').push(params)
@@ -392,7 +400,7 @@ class Trade extends Component {
         this.toggleLoading();
         this.setState(
           {
-            title: null,
+            name: null,
             price: null,
             description: null,
             selectedCategory: null,
@@ -425,6 +433,7 @@ class Trade extends Component {
       selectedCondition,
       selectedCategory,
       selectedLocation,
+      selectedCurrency,
     } = this.state;
     // console.warn(gotImage, name, email, number, address, password);
     if (
@@ -459,6 +468,16 @@ class Trade extends Component {
           });
           return false;
         }
+      }
+
+      if (selectedCurrency === null) {
+        Snackbar.show({
+          text: 'Kindly select currency',
+          duration: Snackbar.LENGTH_SHORT,
+          backgroundColor: theme.colors.primary,
+          fontFamily: Fonts.GoogleSansMedium,
+        });
+        return false;
       }
 
       if (selectedCategory === null) {
@@ -607,15 +626,89 @@ class Trade extends Component {
           placeholderTextColor={'gray'}
           onChangeText={title => this.setState({title: title})}
         />
-        <TextInput
-          style={styles.textInputStyle}
-          placeholder={'Product Price'}
-          value={price}
-          placeholderTextColor={'gray'}
-          onChangeText={price => this.setState({price: price})}
-        />
+        <View style={{flexDirection: 'row', alignSelf: 'center'}}>
+          <TextInput
+            style={[styles.textInputStyle, {width: '50%'}]}
+            placeholder={'Product Price'}
+            value={price}
+            placeholderTextColor={'gray'}
+            onChangeText={price => this.setState({price: price})}
+          />
+          {Platform.OS === 'ios' ? (
+            <Picker
+              selectedValue={this.state.selectedCurrency}
+              placeholder="Currency"
+              style={[styles.textInputStyle, {width: '40%'}]}
+              itemStyle={{
+                height: 40,
+                borderRadius: 5,
+                fontFamily: Fonts.GoogleSansMedium,
+                fontSize: 14,
+              }}
+              onValueChange={value => {
+                this.setState({selectedCurrency: value}, () => {
+                  console.warn(value);
+                });
+              }}>
+              {currencies &&
+                currencies.map((item, index) => {
+                  switch (item.id) {
+                    case 1:
+                      return (
+                        <Picker.Item label={item.name} value={item.name} />
+                      );
+                    default:
+                      return (
+                        <Picker.Item
+                          label={item.name}
+                          value={item.name}
+                          style={styles.mediumText}
+                        />
+                      );
+                  }
+                })}
+            </Picker>
+          ) : (
+            <View
+              style={[
+                styles.textInputStyle,
+                {width: '40%', paddingVertical: 10, paddingHorizontal: 0},
+              ]}>
+              <Picker
+                selectedValue={this.state.selectedCurrency}
+                style={{width: '100%', borderRadius: 5, height: 28}}
+                prompt={'Select Currency'}
+                placeholder={'none'}
+                onValueChange={value => {
+                  this.setState({selectedCurrency: value});
+                }}>
+                {this.state.currencies &&
+                  this.state.currencies.map((item, index) => {
+                    switch (item.id) {
+                      case item.id === '0':
+                        return (
+                          <Picker.Item
+                            id={index}
+                            label={item.name}
+                            value={item.name}
+                          />
+                        );
+                      default:
+                        return (
+                          <Picker.Item
+                            id={index}
+                            label={item.name}
+                            value={item.name}
+                          />
+                        );
+                    }
+                  })}
+              </Picker>
+            </View>
+          )}
+        </View>
         <CustomModal
-          getSelectedCategory={selectedCategory => {
+          getSelectedCategory={(selectedCategory, id) => {
             this.setState({selectedCategory: selectedCategory});
           }}
         />

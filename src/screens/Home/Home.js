@@ -45,62 +45,7 @@ class Home extends Component {
       loading: false,
       data: [],
       filterData: [],
-      categories: [
-        {
-          key: 0,
-          name: 'Featured',
-          image: featured,
-          selected: true,
-        },
-        {
-          key: 1,
-          name: 'Cars',
-          image: carIcon,
-          width: '30%',
-        },
-        {
-          key: 2,
-          name: 'Motorcycles\nand others',
-          image: motorcycle,
-          width: '30%',
-        },
-        {
-          key: 3,
-          name: 'Electronics',
-          image: phone,
-          width: '30%',
-        },
-        {
-          key: 4,
-          name: 'Sports',
-          image: sport,
-          width: '30%',
-        },
-        {
-          key: 5,
-          name: 'Fashion',
-          image: fashion,
-          width: '30%',
-        },
-        {
-          key: 6,
-          name: 'Housing',
-          image: house,
-          width: '30%',
-        },
-        {
-          key: 7,
-          name: 'Home & Garden',
-          image: homegarden,
-          width: '30%',
-        },
-        {
-          key: 8,
-          name: 'Baby and Child',
-          image: kids,
-          width: '30%',
-        },
-      ],
+      categories: [],
       categoriesColors: [
         '#317FB7',
         '#F8863B',
@@ -207,7 +152,7 @@ class Home extends Component {
           }}>
           <Image
             source={{uri: item.image}}
-            resizeMode={'cover'}
+            resizeMode={'contain'}
             style={styles.iconStyle}
           />
         </TouchableOpacity>
@@ -254,10 +199,10 @@ class Home extends Component {
     );
   };
   hanleFav = item => {
-    const {id} = item;
+    const {u_id} = item;
     this.setState({
       data: this.state.data.map(item => {
-        if (item.id === id) {
+        if (item.u_id === u_id) {
           return {
             ...item,
             isFav: !item.isFav,
@@ -319,23 +264,6 @@ class Home extends Component {
             }}
           />
         </View>
-        {this.state.loading && (
-          <ActivityIndicator
-            animating
-            color={theme.colors.primary}
-            // style={visible ? loader.centering : loader.hideIndicator}
-            size="large"
-            style={{
-              position: 'absolute',
-              left: 0,
-              right: 0,
-              top: 0,
-              bottom: 0,
-
-              backgroundColor: 'transparent',
-            }}
-          />
-        )}
 
         {!this.state.loading && this.state.data.length === 0 ? (
           <View

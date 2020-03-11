@@ -27,10 +27,8 @@ class Content extends React.Component {
   }
   componentDidMount = () => {
     const userId = firebaseService.auth().currentUser.uid;
-    const ref = firebaseService
-      .database()
-      .ref('/Users')
-      .child(userId);
+    const ref = firebaseService.database().ref(`/Users/${userId}`);
+
     ref
       .once('value')
       .then(snapshot => {
@@ -59,15 +57,7 @@ class Content extends React.Component {
         style={styles.mainContainer}
         forceInset={{top: 'always', horizontal: 'never'}}>
         <View style={styles.drawerHeaderContainer}>
-          <Image
-            source={{
-              uri:
-                String(userImg) !== null && userImg !== undefined
-                  ? this.state.userImg
-                  : default_user,
-            }}
-            style={styles.userIcon}
-          />
+          <Image source={{uri: this.state.userImg}} style={styles.userIcon} />
           <Text style={styles.largeText}>{this.state.userName}</Text>
         </View>
         <ScrollView

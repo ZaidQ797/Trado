@@ -112,23 +112,26 @@ class Form extends Component {
   };
 
   // User signUp method
-  handleSignupOnPress = async () => {
+  handleSignupOnPress = () => {
     const {email, password} = this.state;
-    if (this.validateData()) {
-      try {
-        this.setState({loading: true});
-        const res = await firebaseService
-          .auth()
-          .createUserWithEmailAndPassword(email, password);
-        if (res) {
+    let validation = this.validateData();
+    console.warn(validation);
+    if (validation == true) {
+      this.toggleLoading();
+      firebaseService
+        .auth()
+        .createUserWithEmailAndPassword(email, password)
+        .then(() => {
+          // console.warn("User SignUp Successfully");
           this.uploadImage();
-        }
-      } catch (err) {
-        this.setState({loading: false});
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        alert(errorMessage);
-      }
+        })
+        .catch(error => {
+          this.toggleLoading();
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          alert(errorMessage);
+          // console.warn("ERROR => ", errorCode, errorMessage);
+        });
     }
   };
 
@@ -228,37 +231,61 @@ class Form extends Component {
   };
 
   // First Upload image and download Image URI then call saveUserToDB()...
-  uploadImage = async () => {
-    try {
+  uploadImage = () => {
+    return new Promise((resolve, reject) => {
       const {uri} = this.state.image;
+      //  file:///fkaskdjfhaskdfhasdkfhasdfhajsdkfhasdkfha.jpg
       const uploadUri =
         Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
+      console.log('====================================');
+      console.log(uploadUri);
+      console.log('====================================');
+      //return;
+      // alert(uploadUri);
+      // return;
+      let uploadBlob = '';
       const imageRef = firebaseService
         .storage()
         .ref('images')
         .child(uuid.v4());
-      const data = await fs.readFile(uploadUri, 'base64');
-      const blob = await Blob.build(data, {
-        type: `${this.state.image.type};BASE64`,
-      });
-      const res = await imageRef.put(blob, {
-        contentType: this.state.image.type,
-      });
-      await blob.close();
-      const downloadedURL = await imageRef.getDownloadURL();
-      this.saveUserInfo(downloadedURL);
-    } catch (err) {
-      console.log(err);
-    }
+
+      fs.readFile(uploadUri, 'base64')
+        .then(data => {
+          return Blob.build(data, {type: `${this.state.image.type};BASE64`});
+        })
+        .then(blob => {
+          uploadBlob = blob;
+          console.log('====================================');
+          console.log(uploadBlob);
+          console.log('====================================');
+          return imageRef.put(blob, {contentType: this.state.image.type});
+        })
+        .then(() => {
+          uploadBlob.close();
+          const downnloadImageURI = imageRef.getDownloadURL().then(url => {
+            const imageUri = url;
+            this.saveUserInfo(imageUri);
+          });
+          return downnloadImageURI;
+        })
+        .then(url => {
+          resolve(url);
+        })
+        .catch(error => {
+          this.toggleLoading();
+          alert(error);
+          reject(error);
+        });
+    });
   };
-  saveUserInfo = imgURL => {
+  saveUserInfo = imgUri => {
     const {userName, email, password} = this.state;
     const {navigate} = this.props.navigation;
     const userId = firebaseService.auth().currentUser.uid;
     const params = {
       uid: userId,
-      image: imgURL,
-      name: userName,
+      image: imgUri,
+      username: userName,
       email: email,
       password: password,
     };
@@ -270,8 +297,7 @@ class Form extends Component {
       .set(params)
       .then(res => {
         this.toggleLoading();
-        console.log('in the method');
-        navigate('Login');
+        this.props.navigation.navigate('Login');
       })
       .catch(err => {
         alert(err);
@@ -311,7 +337,7 @@ class Form extends Component {
               onPress={() => this.pickProfile()}>
               <Image
                 source={gotImage ? {uri: image && image.uri} : default_user}
-                style={{width: 100, height: 100, borderRadius: 50}}
+                style={{width: 80, height: 80, borderRadius: 50}}
                 resizeMode={'cover'}
               />
               <Text

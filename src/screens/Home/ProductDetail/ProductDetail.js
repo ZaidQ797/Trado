@@ -36,25 +36,25 @@ class ProductDetail extends Component {
       userImg: null,
     };
   }
-  componentDidMount = () => {
-    const item = this.props.navigation.getParam('item');
-    return;
-    const ref = firebaseService
-      .database()
-      .ref('/Users')
-      .child(item.uid);
-    ref
-      .once('value')
-      .then(snapshot => {
-        this.setState({
-          userName: snapshot.val().username,
-          userImg: snapshot.val().image,
-        });
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  };
+  // componentDidMount = () => {
+  //   const item = this.props.navigation.getParam('item');
+  //   const {u_id} = item;
+  //   const ref = firebaseService
+  //     .database()
+  //     .ref('/Users')
+  //     .child(u_id);
+  //   ref
+  //     .once('value')
+  //     .then(snapshot => {
+  //       this.setState({
+  //         userName: snapshot.val().username,
+  //         userImg: snapshot.val().image,
+  //       });
+  //     })
+  //     .catch(err => {
+  //       console.log(err);
+  //     });
+  // };
   toggleFavorite = () => {
     this.setState({isFavorite: !this.state.isFavorite});
   };
@@ -68,7 +68,7 @@ class ProductDetail extends Component {
       longitudeDelta,
       description,
     } = this.state;
-    const {swiperImages} = this.state;
+
     return (
       <SafeAreaView style={styles.mainContainer}>
         <Header
@@ -116,7 +116,7 @@ class ProductDetail extends Component {
         </Swiper>
         <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
           <Text style={[styles.largeText, {width: '100%'}]}>
-            {item.title}
+            {item.name}
             {'   '}
             {
               <Text
@@ -170,7 +170,7 @@ class ProductDetail extends Component {
                 userImg: this.state.userImg,
                 username: this.state.userName,
                 location: item.location,
-                uid: item.uid,
+                uid: item.u_id,
               });
             }}
             style={[

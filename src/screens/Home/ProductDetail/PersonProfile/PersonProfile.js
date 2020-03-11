@@ -54,7 +54,7 @@ class PersonProfile extends Component {
         const userID = firebaseService.auth().currentUser.uid;
 
         const uidProducts = newFreshArr.map(item => {
-          if (item.uid === userID) {
+          if (item.u_id === userID) {
             return item;
           }
           return;

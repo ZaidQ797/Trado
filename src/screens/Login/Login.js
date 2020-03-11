@@ -21,7 +21,7 @@ class Login extends Component {
     this.state = {email: '', password: '', loading: false};
   }
 
-  replaceScreen = screen => {
+  replaceScreen = () => {
     const {navigate} = this.props.navigation;
     navigate('Home');
   };
@@ -31,7 +31,7 @@ class Login extends Component {
   };
 
   // let the valid user signIn...
-  signIn = () => {
+  signIn = async () => {
     let validation = this.validateData();
     let {email, password} = this.state;
     if (validation === true) {
@@ -40,13 +40,11 @@ class Login extends Component {
         .auth()
         .signInWithEmailAndPassword(email, password)
         .then(() => {
-          this.toggleLoading(); // stop
-          this.replaceScreen('Home');
+          this.props.navigation.navigate('Home');
         })
         .catch(err => {
-          this.toggleLoading(); // stop
-          // alert(err);
-          alert('Invalid credentials or user may not registered.');
+          alert(err);
+          this.toggleLoading();
         });
     }
   };

@@ -54,9 +54,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   iconStyle: {
-    height: 50,
-    width: 50,
-    borderRadius: 50,
+    height: 40,
+    width: 40,
+    // borderRadius: 50,
   },
   heartStyle: {
     alignSelf: 'flex-end',

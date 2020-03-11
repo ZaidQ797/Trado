@@ -21,55 +21,14 @@ import {
   phone,
 } from '../../assets';
 import Entypo from 'react-native-vector-icons/Entypo';
-
+import firebaseService from '../../service/firebase';
 class CustomModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
       isModalVisible: false,
       selectedCategory: null,
-      categories: [
-        {
-          key: 1,
-          name: 'Cars',
-          image: carIcon,
-        },
-        {
-          key: 2,
-          name: 'Motorcycles ',
-          image: motorcycle,
-        },
-        {
-          key: 3,
-          name: 'Electronics',
-          image: phone,
-        },
-        {
-          key: 4,
-          name: 'Sports',
-          image: sport,
-        },
-        {
-          key: 5,
-          name: 'Fashion',
-          image: fashion,
-        },
-        {
-          key: 6,
-          name: 'Housing',
-          image: house,
-        },
-        {
-          key: 7,
-          name: 'Household',
-          image: homegarden,
-        },
-        {
-          key: 8,
-          name: 'Baby and Child',
-          image: kids,
-        },
-      ],
+      categories: [],
       categoriesColors: [
         '#317FB7',
         '#F8863B',
@@ -82,6 +41,25 @@ class CustomModal extends Component {
       ],
     };
   }
+  componentDidMount = async () => {
+    const ref = firebaseService.database().ref('/Categories');
+    ref.on('value', snapshot => {
+      const val = snapshot.val();
+      if (val !== null) {
+        const newFreshArrr = Object.values(val);
+        this.setState({
+          categories: newFreshArrr,
+          loading: false,
+        });
+      } else {
+        this.setState({
+          categories: [],
+          loading: false,
+        });
+      }
+    });
+  };
+
   renderCategories = ({item, index}) => {
     const {categoriesColors} = this.state;
     const categoryColor = categoriesColors[index % categoriesColors.length];
@@ -100,7 +78,7 @@ class CustomModal extends Component {
           }}
           activeOpacity={1}
           style={[styles.categoryStyle, {backgroundColor: categoryColor}]}>
-          <Image source={item.image} style={styles.iconStyle} />
+          <Image source={{uri: item.image}} style={styles.iconStyle} />
         </TouchableOpacity>
         <Text style={[styles.mediumText, {}]}>{item.name}</Text>
       </View>
