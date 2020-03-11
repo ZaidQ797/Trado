@@ -25,6 +25,7 @@ import Snackbar from 'react-native-snackbar';
 import uuid from 'react-native-uuid';
 import RNFetchBlob from 'rn-fetch-blob';
 import {log} from 'react-native-reanimated';
+import {FlatList} from 'react-native-gesture-handler';
 // Prepare Blob support
 const Blob = RNFetchBlob.polyfill.Blob;
 const fs = RNFetchBlob.fs;
@@ -36,14 +37,7 @@ class Trade extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedImage1: null,
-      selectedImage2: null,
-      selectedImage3: null,
-      selectedImage4: null,
-      downloadedUri1: null,
-      downloadedUri2: null,
-      downloadedUri3: null,
-      downloadedUri4: null,
+      images: [],
       selectedCurrency: null,
       name: null,
       price: null,
@@ -69,34 +63,19 @@ class Trade extends Component {
         {id: 4, name: 'SAR'},
         {id: 5, name: 'AED'},
       ],
+      imagesUploaded: false,
+      uploading: false,
+      uploadedImagesURL: [],
     };
   }
-  pickProfile = async clickedImage => {
-    // Pick Image
+  pickProfile = async () => {
     try {
-      const res = await DocumentPicker.pick({
+      const results = await DocumentPicker.pickMultiple({
         type: [DocumentPicker.types.images],
       });
-      if (clickedImage === 1) {
-        this.setState({
-          selectedImage1: res,
-        });
-      }
-      if (clickedImage === 2) {
-        this.setState({
-          selectedImage2: res,
-        });
-      }
-      if (clickedImage === 3) {
-        this.setState({
-          selectedImage3: res,
-        });
-      }
-      if (clickedImage === 4) {
-        this.setState({
-          selectedImage4: res,
-        });
-      }
+      this.setState({
+        images: results,
+      });
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
         // User cancelled the picker, exit any dialogs or menus and move on
@@ -133,235 +112,61 @@ class Trade extends Component {
     );
   };
   handleProduct = () => {
-    let validation = this.validateData();
-    if (validation == true) {
-      this.toggleLoading();
-      this.uploadImage(0);
-      this.uploadImage(1);
-      this.uploadImage(2);
-      this.uploadImage(3);
-      this.toggleLoading();
+    if (this.validateData()) {
+      this.saveUserProduct();
     }
   };
-  uploadImage = key => {
-    const {
-      selectedImage1,
-      selectedImage2,
-      selectedImage3,
-      selectedImage4,
-    } = this.state;
-    let uri;
-    switch (key) {
-      case 0:
-        uri = selectedImage1.uri;
-        return new Promise((resolve, reject) => {
-          //  file:///fkaskdjfhaskdfhasdkfhasdfhajsdkfhasdkfha.jpg
-          const uploadUri =
-            Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
+  uploadImageToFirebase = ({uri, type, name, size}) => {
+    return new Promise((resolve, reject) => {
+      const uploadUri =
+        Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
+      let uploadBlob = '';
+      const imageRef = firebaseService
+        .storage()
+        .ref('images')
+        .child(uuid.v4());
 
-          //return;
-          // alert(uploadUri);
-          // return;
-          let uploadBlob = '';
-          const imageRef = firebaseService
-            .storage()
-            .ref('images')
-            .child(uuid.v4());
-
-          fs.readFile(uploadUri, 'base64')
-            .then(data => {
-              return Blob.build(data, {
-                type: `${this.state.selectedImage1.type};BASE64`,
-              });
-            })
-            .then(blob => {
-              uploadBlob = blob;
-
-              return imageRef.put(blob, {
-                contentType: this.state.selectedImage1.type,
-              });
-            })
-            .then(() => {
-              uploadBlob.close();
-              const downnloadImageURI = imageRef.getDownloadURL().then(url => {
-                this.setState({downloadedUri1: url}, () => {
-                  console.log('URI 1==============>');
-                  console.log(this.state.downloadedUri1);
-                  console.log('URI 1==============>');
-                });
-              });
-              return downnloadImageURI;
-            })
-            .then(url => {
-              resolve(url);
-            })
-            .catch(error => {
-              this.toggleLoading();
-              alert(error);
-              reject(error);
-            });
+      fs.readFile(uploadUri, 'base64')
+        .then(data => {
+          return Blob.build(data, {
+            type: `${type};BASE64`,
+          });
+        })
+        .then(blob => {
+          uploadBlob = blob;
+          return imageRef.put(blob, {
+            contentType: type,
+          });
+        })
+        .then(() => {
+          uploadBlob.close();
+          return imageRef.getDownloadURL();
+        })
+        .then(url => {
+          resolve(url);
+        })
+        .catch(error => {
+          this.toggleLoading();
+          alert(error);
+          reject(error);
         });
-
-      case 1:
-        uri = selectedImage2.uri;
-        return new Promise((resolve, reject) => {
-          //  file:///fkaskdjfhaskdfhasdkfhasdfhajsdkfhasdkfha.jpg
-          const uploadUri =
-            Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
-
-          //return;
-          // alert(uploadUri);
-          // return;
-          let uploadBlob = '';
-          const imageRef = firebaseService
-            .storage()
-            .ref('images')
-            .child(uuid.v4());
-
-          fs.readFile(uploadUri, 'base64')
-            .then(data => {
-              return Blob.build(data, {
-                type: `${this.state.selectedImage2.type};BASE64`,
-              });
-            })
-            .then(blob => {
-              uploadBlob = blob;
-              console.log('====================================');
-              console.log(uploadBlob);
-              console.log('====================================');
-              return imageRef.put(blob, {
-                contentType: this.state.selectedImage2.type,
-              });
-            })
-            .then(() => {
-              uploadBlob.close();
-              const downnloadImageURI = imageRef.getDownloadURL().then(url => {
-                this.setState({downloadedUri2: url}, () => {
-                  console.log('URI 2==============>');
-
-                  console.log(this.state.downloadedUri2);
-                  console.log('==============>');
-                });
-              });
-              return downnloadImageURI;
-            })
-            .then(url => {
-              resolve(url);
-            })
-            .catch(error => {
-              this.toggleLoading();
-              alert(error);
-              reject(error);
-            });
-        });
-
-      case 2:
-        uri = selectedImage3.uri;
-        return new Promise((resolve, reject) => {
-          //  file:///fkaskdjfhaskdfhasdkfhasdfhajsdkfhasdkfha.jpg
-          const uploadUri =
-            Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
-
-          //return;
-          // alert(uploadUri);
-          // return;
-          let uploadBlob = '';
-          const imageRef = firebaseService
-            .storage()
-            .ref('images')
-            .child(uuid.v4());
-
-          fs.readFile(uploadUri, 'base64')
-            .then(data => {
-              return Blob.build(data, {
-                type: `${this.state.selectedImage3.type};BASE64`,
-              });
-            })
-            .then(blob => {
-              uploadBlob = blob;
-              console.log('====================================');
-              console.log(uploadBlob);
-              console.log('====================================');
-              return imageRef.put(blob, {
-                contentType: this.state.selectedImage3.type,
-              });
-            })
-            .then(() => {
-              uploadBlob.close();
-              const downnloadImageURI = imageRef.getDownloadURL().then(url => {
-                this.setState({downloadedUri3: url}, () => {
-                  console.log('URI 2==============>');
-                  console.log(this.state.downloadedUri3);
-                  console.log('==============>');
-                });
-              });
-              return downnloadImageURI;
-            })
-            .then(url => {
-              resolve(url);
-            })
-            .catch(error => {
-              this.toggleLoading();
-              alert(error);
-              reject(error);
-            });
-        });
-
-      case 3:
-        uri = selectedImage4.uri;
-        return new Promise((resolve, reject) => {
-          //  file:///fkaskdjfhaskdfhasdkfhasdfhajsdkfhasdkfha.jpg
-          const uploadUri =
-            Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
-
-          //return;
-          // alert(uploadUri);
-          // return;
-          let uploadBlob = '';
-          const imageRef = firebaseService
-            .storage()
-            .ref('images')
-            .child(uuid.v4());
-
-          fs.readFile(uploadUri, 'base64')
-            .then(data => {
-              return Blob.build(data, {
-                type: `${this.state.selectedImage4.type};BASE64`,
-              });
-            })
-            .then(blob => {
-              uploadBlob = blob;
-              console.log('====================================');
-              console.log(uploadBlob);
-              console.log('====================================');
-              return imageRef.put(blob, {
-                contentType: this.state.selectedImage4.type,
-              });
-            })
-            .then(() => {
-              uploadBlob.close();
-              const downnloadImageURI = imageRef.getDownloadURL().then(url => {
-                this.setState({downloadedUri4: url}, () => {
-                  console.log('URI 4==============>');
-                  console.log(this.state.downloadedUri4);
-                  console.log('==============>');
-                  this.saveUserProduct();
-                });
-              });
-              return downnloadImageURI;
-            })
-            .then(url => {
-              resolve(url);
-            })
-            .catch(error => {
-              this.toggleLoading();
-              alert(error);
-              reject(error);
-            });
-        });
-
-      default:
-        return;
+    });
+  };
+  uploadImage = async () => {
+    try {
+      this.setState({uploading: true});
+      const res = await Promise.all(
+        this.state.images.map(item => {
+          return this.uploadImageToFirebase(item);
+        }),
+      );
+      this.setState({
+        uploading: false,
+        uploadedImagesURL: res,
+        imagesUploaded: true,
+      });
+    } catch (err) {
+      console.warn(err);
     }
   };
   //Save Product
@@ -374,24 +179,19 @@ class Trade extends Component {
       selectedCondition,
       selectedCurrency,
       selectedCategory,
-      downloadedUri1,
-      downloadedUri2,
-      downloadedUri3,
-      downloadedUri4,
     } = this.state;
     const userId = firebaseService.auth().currentUser.uid;
     const params = {
-      name: name,
-      price: price,
+      name,
+      price,
       currency: selectedCurrency,
       description: description,
       condition: selectedCondition,
-      category: selectedCategory,
+      category: selectedCategory.cat_id,
       location: selectedLocation,
-      images: [downloadedUri1, downloadedUri2, downloadedUri3, downloadedUri4],
+      images: this.state.uploadedImagesURL,
       uid: userId,
     };
-    //firebaseService.database().ref('/Users').push(params)
     firebaseService
       .database()
       .ref('/Products')
@@ -400,16 +200,12 @@ class Trade extends Component {
         this.toggleLoading();
         this.setState(
           {
-            name: null,
-            price: null,
+            name: '',
+            price: '',
             description: null,
             selectedCategory: null,
             selectedCondition: null,
             selectedLocation: null,
-            selectedImage1: null,
-            selectedImage2: null,
-            selectedImage3: null,
-            selectedImage4: null,
           },
           () => {
             this.props.navigation.push('Home');
@@ -518,16 +314,19 @@ class Trade extends Component {
       } else return true;
     }
   };
+
+  renderImage = ({item, index}) => {
+    return (
+      <Image
+        key={index}
+        source={{uri: item.uri}}
+        style={{height: 100, width: 100, borderRadius: 5, margin: 2}}
+      />
+    );
+  };
+
   render() {
-    const {
-      selectedImage1,
-      selectedImage3,
-      selectedImage2,
-      selectedImage4,
-      title,
-      price,
-      description,
-    } = this.state;
+    const {title, price, description} = this.state;
     return (
       <View style={{flex: 1}}>
         <Header
@@ -535,7 +334,6 @@ class Trade extends Component {
           centerComponent={<HeaderCenter name="Home" />}
           containerStyle={styles.headerStyle}
         />
-
         <Text
           style={[
             styles.largeText,
@@ -543,88 +341,48 @@ class Trade extends Component {
           ]}>
           Upload Photos
         </Text>
-        <View
-          style={{
-            flexDirection: 'row',
-            marginVertical: '4%',
-            width: '100%',
-            justifyContent: 'space-around',
-          }}>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => this.pickProfile(1)}>
-            {selectedImage1 !== null ? (
-              <Image
-                source={{uri: selectedImage1.uri}}
-                style={{
-                  height: 80,
-                  width: 80,
-                  borderRadius: 5,
-                }}
-                resizeMode={'cover'}
-              />
-            ) : (
-              <Image source={upload} style={styles.uploadImage} />
-            )}
+        {this.state.images.length === 0 && (
+          <TouchableOpacity onPress={this.pickProfile}>
+            <Image
+              source={upload}
+              style={{alignSelf: 'center', width: 100, height: 100}}
+            />
           </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => this.pickProfile(2)}>
-            {selectedImage2 !== null ? (
-              <Image
-                source={{uri: selectedImage2.uri}}
-                style={{
-                  height: 80,
-                  width: 80,
-                  borderRadius: 5,
-                }}
-                resizeMode={'cover'}
-              />
-            ) : (
-              <Image source={upload} />
-            )}
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => this.pickProfile(3)}>
-            {selectedImage3 !== null ? (
-              <Image
-                source={{uri: selectedImage3.uri}}
-                style={{
-                  height: 80,
-                  width: 80,
-                  borderRadius: 5,
-                }}
-                resizeMode={'cover'}
-              />
-            ) : (
-              <Image source={upload} />
-            )}
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => this.pickProfile(4)}>
-            {selectedImage4 !== null ? (
-              <Image
-                source={{uri: selectedImage4.uri}}
-                style={{
-                  height: 80,
-                  width: 80,
-                  borderRadius: 5,
-                }}
-                resizeMode={'cover'}
-              />
-            ) : (
-              <Image source={upload} />
-            )}
-          </TouchableOpacity>
-        </View>
+        )}
+
+        {this.state.images.length > 0 && (
+          <View>
+            <FlatList
+              data={this.state.images}
+              horizontal
+              renderItem={this.renderImage}
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={index => index.toString()}
+            />
+          </View>
+        )}
+        <TouchableOpacity
+          style={[
+            styles.primaryButton,
+            {opacity: this.state.imagesUploaded ? 0.5 : 0.9},
+          ]}
+          activeOpacity={0.7}
+          disabled={this.state.uploadedImagesURL.length > 0}
+          onPress={this.uploadImage}>
+          {this.state.uploading ? (
+            <ActivityIndicator animating size={'large'} color={'#fff'} />
+          ) : (
+            <Text style={[styles.largeText, {color: theme.colors.white}]}>
+              {this.state.imagesUploaded ? 'Uploaded Success' : 'Upload Images'}
+            </Text>
+          )}
+        </TouchableOpacity>
         <TextInput
           style={styles.textInputStyle}
           placeholder={'Product Title'}
           value={title}
           placeholderTextColor={'gray'}
-          onChangeText={title => this.setState({title: title})}
+          onChangeText={name => this.setState({name})}
         />
         <View style={{flexDirection: 'row', alignSelf: 'center'}}>
           <TextInput
@@ -650,8 +408,8 @@ class Trade extends Component {
                   console.warn(value);
                 });
               }}>
-              {currencies &&
-                currencies.map((item, index) => {
+              {this.state.currencies &&
+                this.state.currencies.map((item, index) => {
                   switch (item.id) {
                     case 1:
                       return (
@@ -734,8 +492,12 @@ class Trade extends Component {
           }
         />
         <TouchableOpacity
-          style={styles.primaryButton}
+          style={[
+            styles.primaryButton,
+            {opacity: this.state.imagesUploaded ? 0.9 : 0.5},
+          ]}
           activeOpacity={0.7}
+          disabled={!this.state.imagesUploaded}
           onPress={this.handleProduct}>
           <Text style={[styles.largeText, {color: theme.colors.white}]}>
             Add Product

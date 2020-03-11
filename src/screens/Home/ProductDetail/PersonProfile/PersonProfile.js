@@ -12,7 +12,7 @@ import HeaderLeft from '../../../../components/HeaderLeft';
 import HeaderCenter from '../../../../components/HeaderCenter';
 import styles from './styles';
 import {user} from '../../../../assets';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Entypo from 'react-native-vector-icons/Entypo';
 import theme from '../../../../theme';
 import Trading from './components/Trading';
 import TradeDone from './components/TradeDone';
@@ -25,6 +25,7 @@ class PersonProfile extends Component {
       trading: true,
       tradeDone: false,
       reviews: false,
+      userProducts: [],
     };
   }
   componentDidMount = () => {
@@ -35,53 +36,17 @@ class PersonProfile extends Component {
     });
   };
 
-  getData = () => {
+  getData = async () => {
     this.toggleLoading();
-    const uid = this.props.navigation.getParam('uid');
-
-    const newArr = [];
+    const item = this.props.navigation.getParam('item');
     const ref = firebaseService.database().ref('/Products');
-
     ref.on('value', snapshot => {
-      const values = snapshot.val();
-      if (values !== null) {
-        const newFreshArr = Object.values(values);
-
-        // for (let item in newFreshArr) {
-        //   console.log(item);
-        // }:
-
-        const userID = firebaseService.auth().currentUser.uid;
-
-        const uidProducts = newFreshArr.map(item => {
-          if (item.u_id === userID) {
-            return item;
-          }
-          return;
-        });
-
-        alert(uidProducts);
-
-        // newFreshArr.forEach((item, index) => {
-        //   console.log(item);
-        // });
-
-        // for (let i = 0; i <= newFreshArr.length; i++) {
-        //   if (newFreshArr[1].uid === uid) {
-        //     newArr.push(newFreshArr[i]);
-        //   }
-        // }
-
-        this.setState({
-          data: newFreshArr,
-          loading: false,
-        });
-      } else {
-        this.setState({
-          data: [],
-          loading: false,
-        });
-      }
+      if (snapshot.val() === null) return;
+      this.setState({
+        userProducts: Object.values(snapshot.val()).filter(
+          obj => obj.uid === item.uid,
+        ),
+      });
     });
   };
   componentWillUnmount = () => {
@@ -117,9 +82,7 @@ class PersonProfile extends Component {
 
   render() {
     const {trading, tradeDone, reviews} = this.state;
-    const userName = this.props.navigation.getParam('username');
-    const userImg = this.props.navigation.getParam('userImg');
-    const userLocation = this.props.navigation.getParam('location');
+    const item = this.props.navigation.getParam('item');
     return (
       <View style={styles.mainContainer}>
         <Header
@@ -131,16 +94,16 @@ class PersonProfile extends Component {
         />
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.userInfo}>
-            <Image source={{uri: userImg}} style={styles.userImageSize} />
-            <Text style={styles.largeText}>{userName}</Text>
+            <Image source={{uri: item.image}} style={styles.userImageSize} />
+            <Text style={styles.largeText}>{item.username}</Text>
             <View style={{flexDirection: 'row'}}>
-              <MaterialIcons
-                name="location-on"
+              <Entypo
+                name="mail"
                 size={24}
                 color={theme.colors.text}
                 style={{alignSelf: 'center'}}
               />
-              <Text style={styles.largeText}>{userLocation}</Text>
+              <Text style={styles.largeText}>{item.email}</Text>
             </View>
             <Divider style={styles.dividerStyle} />
           </View>
@@ -190,9 +153,9 @@ class PersonProfile extends Component {
               <Text style={[styles.mediumText, {color: 'white'}]}>Reviews</Text>
             </TouchableOpacity>
           </View>
-          {trading ? <Trading /> : null}
-          {tradeDone ? <TradeDone /> : null}
-          {reviews ? <Reviews /> : null}
+          {trading && <Trading data={this.state.userProducts} />}
+          {tradeDone && <TradeDone />}
+          {reviews && <Reviews />}
         </ScrollView>
       </View>
     );

@@ -74,7 +74,7 @@ class CustomModal extends Component {
         }}>
         <TouchableOpacity
           onPress={() => {
-            this.handleSelectedCategory(item.name);
+            this.handleSelectedCategory(item);
           }}
           activeOpacity={1}
           style={[styles.categoryStyle, {backgroundColor: categoryColor}]}>
@@ -84,8 +84,8 @@ class CustomModal extends Component {
       </View>
     );
   };
-  handleSelectedCategory = name => {
-    this.setState({selectedCategory: name}, () => {
+  handleSelectedCategory = item => {
+    this.setState({selectedCategory: item}, () => {
       this.props.getSelectedCategory(this.state.selectedCategory);
     });
     this.toggleModal();
@@ -146,7 +146,9 @@ class CustomModal extends Component {
               styles.textInputStyle,
               {color: selectedCategory != null ? '#000' : 'gray'},
             ]}>
-            {selectedCategory != null ? selectedCategory : 'Select Category'}
+            {selectedCategory != null
+              ? selectedCategory.name
+              : 'Select Category'}
           </Text>
         </TouchableOpacity>
         {this.state.isModalVisible ? this.renderModel() : null}

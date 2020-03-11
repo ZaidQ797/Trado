@@ -238,17 +238,14 @@ class Form extends Component {
       //  file:///fkaskdjfhaskdfhasdkfhasdfhajsdkfhasdkfha.jpg
       const uploadUri =
         Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
-      console.log('====================================');
-      console.warn(uploadUri);
-      console.log('====================================');
       //return;
       // alert(uploadUri);
       // return;
       let uploadBlob = '';
       const imageRef = firebaseService
         .storage()
-        .ref('images')
-        .child(uuid.v4());
+        .ref('user')
+        .child(this.state.userName + '=======' + uuid.v4());
 
       fs.readFile(uploadUri, 'base64')
         .then(data => {

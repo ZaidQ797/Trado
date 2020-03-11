@@ -14,7 +14,13 @@ import Swiper from 'react-native-swiper';
 import {Header, Divider, Rating} from 'react-native-elements';
 import HeaderLeft from '../../../components/HeaderLeft';
 import HeaderCenter from '../../../components/HeaderCenter';
-import {bicycle1, bicycle2, bicycle3, user} from '../../../assets';
+import {
+  bicycle1,
+  bicycle2,
+  bicycle3,
+  user,
+  default_user,
+} from '../../../assets';
 import theme from '../../../theme';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -32,29 +38,32 @@ class ProductDetail extends Component {
       description: 'Sargodha',
       isFavorite: false,
       swiperImages: [],
-      userName: null,
-      userImg: null,
+      user: null,
     };
   }
-  // componentDidMount = () => {
-  //   const item = this.props.navigation.getParam('item');
-  //   const {u_id} = item;
-  //   const ref = firebaseService
-  //     .database()
-  //     .ref('/Users')
-  //     .child(u_id);
-  //   ref
-  //     .once('value')
-  //     .then(snapshot => {
-  //       this.setState({
-  //         userName: snapshot.val().username,
-  //         userImg: snapshot.val().image,
-  //       });
-  //     })
-  //     .catch(err => {
-  //       console.log(err);
-  //     });
-  // };
+  componentDidMount = () => {
+    const item = this.props.navigation.getParam('item');
+    const {uid} = item;
+    const ref = firebaseService
+      .database()
+      .ref('/Users')
+      .child(uid);
+    ref
+      .once('value')
+      .then(snapshot => {
+        this.setState(
+          {
+            user: snapshot.val(),
+          },
+          () => {
+            console.warn(this.state.user);
+          },
+        );
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
   toggleFavorite = () => {
     this.setState({isFavorite: !this.state.isFavorite});
   };
@@ -117,20 +126,17 @@ class ProductDetail extends Component {
         <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
           <Text style={[styles.largeText, {width: '100%'}]}>
             {item.name}
-            {'   '}
-            {
-              <Text
-                style={[
-                  styles.largeText,
-                  {
-                    color: theme.colors.primary,
-                    fontSize: 20,
-                    alignSelf: 'flex-end',
-                  },
-                ]}>
-                {item.price} PKR
-              </Text>
-            }
+            <Text
+              style={[
+                styles.largeText,
+                {
+                  color: theme.colors.primary,
+                  fontSize: 20,
+                  alignSelf: 'flex-end',
+                },
+              ]}>
+              {item.price} PKR
+            </Text>
           </Text>
           <Text style={styles.mediumText}>{item.description}</Text>
           <View
@@ -167,10 +173,7 @@ class ProductDetail extends Component {
             activeOpacity={1}
             onPress={() => {
               this.props.navigation.navigate('PersonProfile', {
-                userImg: this.state.userImg,
-                username: this.state.userName,
-                location: item.location,
-                uid: item.u_id,
+                item: this.state.user,
               });
             }}
             style={[
@@ -180,12 +183,18 @@ class ProductDetail extends Component {
               },
             ]}>
             <Image
-              source={{uri: this.state.userImg}}
-              resizeMode={'contain'}
+              source={
+                this.state.user !== null
+                  ? {uri: this.state.user.image}
+                  : default_user
+              }
+              resizeMode={'cover'}
               style={styles.circularImageStyle}
             />
             <View>
-              <Text style={styles.largeText}>{this.state.userName}</Text>
+              <Text style={styles.largeText}>
+                {this.state.user && this.state.user.username}
+              </Text>
               <Rating
                 imageSize={15}
                 readonly

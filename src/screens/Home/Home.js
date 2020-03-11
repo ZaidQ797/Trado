@@ -152,7 +152,11 @@ class Home extends Component {
           }}
           key={index}>
           <Image
-            source={{uri: item.image}}
+            source={
+              item !== null
+                ? {uri: item !== null ? item.image : ''}
+                : default_user
+            }
             resizeMode={'contain'}
             style={styles.iconStyle}
           />
@@ -175,7 +179,7 @@ class Home extends Component {
         }}>
         <ImageBackground
           key={index}
-          source={{uri: item.images[0]}}
+          source={item !== null ? {uri: item.images[0]} : default_user}
           style={styles.userImageStyle}
           resizeMode={'cover'}>
           <Ionicons
@@ -200,18 +204,18 @@ class Home extends Component {
     );
   };
   hanleFav = item => {
-    const {u_id} = item;
-    this.setState({
-      data: this.state.data.map(item => {
-        if (item.u_id === u_id) {
-          return {
-            ...item,
-            isFav: !item.isFav,
-          };
-        }
-        return item;
-      }),
-    });
+    // const {u_id} = item;
+    // this.setState({
+    //   data: this.state.data.map(item => {
+    //     if (item.u_id === u_id) {
+    //       return {
+    //         ...item,
+    //         isFav: !item.isFav,
+    //       };
+    //     }
+    //     return item;
+    //   }),
+    // });
   };
   toggleLoading = () => {
     this.setState({loading: !this.state.loading});
