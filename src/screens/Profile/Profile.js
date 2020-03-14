@@ -7,6 +7,7 @@ import {
   TextInput,
   ActivityIndicator,
   Alert,
+  SafeAreaView,
 } from 'react-native';
 import {Header, Divider} from 'react-native-elements';
 import HeaderLeft from '../../components/HeaderLeft';
@@ -32,10 +33,11 @@ class Profile extends Component {
     super(props);
     this.state = {
       user: null,
-      userImg: null,
+      userImg: '',
       loading: false,
       username: '',
       email: '',
+      imageUrl: '',
     };
   }
   componentDidMount() {
@@ -54,9 +56,10 @@ class Profile extends Component {
               user: snapshot.val(),
               username: snapshot.val().username,
               email: snapshot.val().email,
+              imageUrl: snapshot.val().image,
             },
             () => {
-              console.warn(this.state.user);
+              console.warn(this.state.imageUrl);
               this.toggleLoading();
             },
           );
@@ -176,11 +179,10 @@ class Profile extends Component {
   render() {
     const {user, userImg} = this.state;
     return (
-      <View style={styles.mainContainer}>
+      <SafeAreaView style={styles.mainContainer}>
         <Header
           leftComponent={<HeaderLeft navigation={this.props.navigation} />}
           centerComponent={<HeaderCenter name="Profile" />}
-          containerStyle={styles.headerStyle}
         />
         <Loader visible={this.props.visible} />
         <View>
@@ -194,19 +196,15 @@ class Profile extends Component {
               style={{justifyContent: 'center', alignItems: 'center'}}
               onPress={() => this.pickProfile()}>
               <Image
-                source={
-                  userImg !== null
-                    ? {
-                        uri: userImg.uri,
-                      }
-                    : user && user.image
-                }
+                source={{
+                  uri: userImg !== '' ? userImg.uri : this.state.imageUrl,
+                }}
                 style={{width: 100, height: 100, borderRadius: 50}}
                 resizeMode={'cover'}
               />
 
               <Text style={{fontFamily: Fonts.OpenSans, paddingTop: 5}}>
-                {userImg === null ? 'Change' : 'Upload your picture'}
+                {userImg === '' ? 'Change' : 'Upload your picture'}
               </Text>
             </TouchableOpacity>
           </View>
@@ -228,7 +226,7 @@ class Profile extends Component {
             </TouchableOpacity>
           </View>
         </View>
-      </View>
+      </SafeAreaView>
     );
   }
 }

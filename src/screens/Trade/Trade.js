@@ -396,7 +396,7 @@ class Trade extends Component {
             <Picker
               selectedValue={this.state.selectedCurrency}
               placeholder="Currency"
-              style={[styles.textInputStyle, {width: '40%'}]}
+              style={[styles.textInputStyle, {width: '40%', height: 40}]}
               itemStyle={{
                 height: 40,
                 borderRadius: 5,
