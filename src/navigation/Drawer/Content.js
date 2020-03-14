@@ -29,17 +29,12 @@ class Content extends React.Component {
     const userId = firebaseService.auth().currentUser.uid;
     const ref = firebaseService.database().ref(`/Users/${userId}`);
 
-    ref
-      .once('value')
-      .then(snapshot => {
-        this.setState({
-          userName: snapshot.val().username,
-          userImg: snapshot.val().image,
-        });
-      })
-      .catch(err => {
-        console.log(err);
+    ref.on('value', snapshot => {
+      this.setState({
+        userName: snapshot.val().username,
+        userImg: snapshot.val().image,
       });
+    });
   };
   signOutUser = async () => {
     const {navigate} = this.props.navigation;
@@ -57,7 +52,14 @@ class Content extends React.Component {
         style={styles.mainContainer}
         forceInset={{top: 'always', horizontal: 'never'}}>
         <View style={styles.drawerHeaderContainer}>
-          <Image source={{uri: this.state.userImg}} style={styles.userIcon} />
+          <Image
+            source={
+              this.state.userImg !== null
+                ? {uri: this.state.userImg}
+                : default_user
+            }
+            style={styles.userIcon}
+          />
           <Text style={styles.largeText}>{this.state.userName}</Text>
         </View>
         <ScrollView

@@ -44,19 +44,20 @@ const styles = StyleSheet.create({
   },
   categoryStyle: {
     borderRadius: 60,
-    padding: 5,
     backgroundColor: 'tomato',
-    height: 50,
-    width: 50,
+    height: 70,
+    width: 70,
     justifyContent: 'center',
     alignItems: 'center',
     margin: 7,
     alignSelf: 'center',
+    padding: 15,
   },
   iconStyle: {
     height: 40,
     width: 40,
     // borderRadius: 50,
+    padding: 10,
   },
   heartStyle: {
     alignSelf: 'flex-end',

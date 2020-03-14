@@ -6,54 +6,67 @@ import {
   Image,
   TextInput,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import {Header, Divider} from 'react-native-elements';
 import HeaderLeft from '../../components/HeaderLeft';
 import HeaderCenter from '../../components/HeaderCenter';
 import styles from './styles';
+import RNFetchBlob from 'rn-fetch-blob';
 import DocumentPicker from 'react-native-document-picker';
+import uuid from 'react-native-uuid';
 // import {uploadPic} from '../../assets';
 import {Fonts} from '../../utils/Fonts';
 import theme from '../../theme';
 import {Loader} from '../../utils/Loading';
 import firebaseService from '../../service/firebase';
+import {default_user} from '../../assets';
+// Prepare Blob support
+const Blob = RNFetchBlob.polyfill.Blob;
+const fs = RNFetchBlob.fs;
+window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest;
+window.Blob = Blob;
+
 class Profile extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userName: null,
-      userEmail: null,
-      userPassword: null,
+      user: null,
       userImg: null,
       loading: false,
+      username: '',
+      email: '',
     };
   }
   componentDidMount() {
-    this.toggleLoading();
-    const userId = firebaseService.auth().currentUser.uid;
-    const ref = firebaseService
-      .database()
-      .ref('/Users')
-      .child(userId);
-
-    ref
-      .once('value')
-      .then(snapshot => {
-        this.setState(
-          {
-            userName: snapshot.val().username,
-            userImg: snapshot.val().image,
-            userEmail: snapshot.val().email,
-            userPassword: snapshot.val().password,
-          },
-          () => {
-            this.toggleLoading();
-          },
-        );
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    try {
+      this.toggleLoading();
+      const userId = firebaseService.auth().currentUser.uid;
+      const ref = firebaseService
+        .database()
+        .ref('/Users')
+        .child(userId);
+      ref
+        .once('value')
+        .then(snapshot => {
+          this.setState(
+            {
+              user: snapshot.val(),
+              username: snapshot.val().username,
+              email: snapshot.val().email,
+            },
+            () => {
+              console.warn(this.state.user);
+              this.toggleLoading();
+            },
+          );
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    } catch (err) {
+      console.warn(err);
+    }
   }
 
   toggleLoading = () => ({
@@ -67,54 +80,101 @@ class Profile extends Component {
         type: [DocumentPicker.types.images],
       });
       this.setState({
-        userImg: res.uri,
+        userImg: res,
       });
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
         // User cancelled the picker, exit any dialogs or menus and move on
       } else {
-        throw err;
+        console.warn(err);
       }
     }
   };
   onChangeName = name => {
-    this.setState({userName: name});
+    this.setState({username: name});
   };
 
   onChangeEmail = email => {
-    this.setState({userEmail: email});
+    this.setState({email: email});
   };
 
-  onChangePassword = password => {
-    this.setState({userPassword: password});
-  };
+  uploadImageToFirebase = ({uri, type, name, size}) => {
+    //first we have to remove previos image from stroage then upload new one :)
+    const refURL = firebaseService.storage().refFromURL(this.state.user.image);
+    if (refURL !== undefined) refURL.delete();
+    return new Promise((resolve, reject) => {
+      const uploadUri =
+        Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
+      let uploadBlob = '';
+      const imageRef = firebaseService
+        .storage()
+        .ref('user')
+        .child(this.state.username + ' =====> ' + uuid.v4());
 
-  uploadImage = () => {
-    //TODO!!! Update image to Storage
-  };
-
-  updateProfile = () => {
-    this.uploadImage();
-    this.toggleLoading();
-    const {userName, userEmail, userPassword, userImg} = this.state;
-    const currentUser = firebaseService.auth().currentUser.uid;
-    firebaseService
-      .database()
-      .ref('/Users')
-      .child(currentUser)
-      .update({
-        username: userName,
-      })
-      .then(data => {
-        console
-          .log('Data Updated SuccessFully' + data.toString())
-          .cath(error => {
-            console.log(error);
+      fs.readFile(uploadUri, 'base64')
+        .then(data => {
+          return Blob.build(data, {
+            type: `${type};BASE64`,
           });
-      });
+        })
+        .then(blob => {
+          uploadBlob = blob;
+          return imageRef.put(blob, {
+            contentType: type,
+          });
+        })
+        .then(() => {
+          uploadBlob.close();
+          return imageRef.getDownloadURL();
+        })
+        .then(url => {
+          resolve(url);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  };
+
+  updateProfile = async () => {
+    try {
+      let newURL;
+      this.toggleLoading();
+      if (this.state.userImg !== null) {
+        newURL = await this.uploadImageToFirebase(this.state.userImg);
+        console.warn(newURL);
+      }
+      let updateParams;
+      console.warn(newURL);
+      if (this.state.userImg !== null) {
+        updateParams = {
+          username: this.state.username,
+          image: newURL,
+        };
+      } else {
+        updateParams = {
+          username: this.state.username,
+        };
+      }
+
+      const currentUser = firebaseService.auth().currentUser.uid;
+      firebaseService
+        .database()
+        .ref('/Users')
+        .child(currentUser)
+        .update(updateParams)
+        .then(data => {
+          Alert.alert('Congrats', 'Data Updated SuccessFully');
+        })
+        .catch(err => {
+          alert(err);
+        });
+    } catch (err) {
+      console.warn(err);
+    }
   };
   render() {
-    const {userImg, userName, userEmail, userPassword} = this.state;
+    const {user, userImg} = this.state;
     return (
       <View style={styles.mainContainer}>
         <Header
@@ -133,21 +193,20 @@ class Profile extends Component {
             <TouchableOpacity
               style={{justifyContent: 'center', alignItems: 'center'}}
               onPress={() => this.pickProfile()}>
-              {userImg !== null ? (
-                <Image
-                  source={{uri: userImg}}
-                  style={{width: 100, height: 100, borderRadius: 50}}
-                  resizeMode={'cover'}
-                />
-              ) : (
-                <Image
-                  source={userImg}
-                  style={{width: 80, height: 80}}
-                  resizeMode={'contain'}
-                />
-              )}
+              <Image
+                source={
+                  userImg !== null
+                    ? {
+                        uri: userImg.uri,
+                      }
+                    : user && user.image
+                }
+                style={{width: 100, height: 100, borderRadius: 50}}
+                resizeMode={'cover'}
+              />
+
               <Text style={{fontFamily: Fonts.OpenSans, paddingTop: 5}}>
-                {userImg !== null ? 'Change' : 'Upload your picture'}
+                {userImg === null ? 'Change' : 'Upload your picture'}
               </Text>
             </TouchableOpacity>
           </View>
@@ -156,25 +215,9 @@ class Profile extends Component {
               placeholder="Enter your Name"
               keyboardType="default"
               style={styles.inputFieldStyle}
-              value={userName}
+              value={this.state.username}
               onChangeText={name => this.onChangeName(name)}
             />
-            <TextInput
-              placeholder="Email"
-              keyboardType="email-address"
-              value={userEmail}
-              style={styles.inputFieldStyle}
-              onChangeText={email => this.onChangeEmail(email)}
-            />
-            <TextInput
-              placeholder="Enter Password"
-              keyboardType="name-phone-pad"
-              secureTextEntry
-              value={userPassword}
-              style={styles.inputFieldStyle}
-              onChangeText={password => this.onChangePassword(password)}
-            />
-
             <TouchableOpacity
               style={styles.primaryButton}
               activeOpacity={0.9}
