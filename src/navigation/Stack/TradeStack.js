@@ -1,8 +1,9 @@
 import React from 'react';
 import {createStackNavigator} from 'react-navigation-stack';
+
 //screens
 import Trade from '../../screens/Trade';
-
+import MapModal from '../../components/MapModal';
 const TradeStack = createStackNavigator(
   {
     Trades: {
@@ -11,6 +12,7 @@ const TradeStack = createStackNavigator(
         header: null,
       },
     },
+    MapModal: {screen: MapModal, navigationOptions: {headerShown: false}},
   },
   {initialRouteName: 'Trades'},
 );

@@ -34,3 +34,5 @@ export const fashion = require('./icons/shoe.png');
 export const sport = require('./icons/sport.png');
 export const phone = require('./icons/phone.png');
 export const featured = require('./icons/featured.png');
+export const pinIcon = require('./icons/pin.png');
+export const nextIcon = require('./icons/next.png');

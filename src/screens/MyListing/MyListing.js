@@ -8,6 +8,7 @@ import theme from '../../theme';
 import Trading from './components/Trading';
 import TradeDone from './components/TradeDone';
 import Favorite from './components/Favorite';
+import firebaseService from '../../service/firebase';
 
 class MyListing extends Component {
   constructor(props) {
@@ -15,9 +16,39 @@ class MyListing extends Component {
     this.state = {
       trading: true,
       tradeDone: false,
-      favorite: false,
+      reviews: false,
+      userProducts: [],
     };
   }
+  componentDidMount = () => {
+    this.getData();
+    this.focusListner = this.props.navigation.addListener('didFocus', () => {
+      // Update your data
+      this.getData();
+    });
+  };
+  getData = async () => {
+    this.toggleLoading();
+    const userId = firebaseService.auth().currentUser.uid;
+    const ref = firebaseService.database().ref('/Products');
+    ref.on('value', snapshot => {
+      if (snapshot.val() === null) return;
+      this.setState(
+        {
+          userProducts: Object.values(snapshot.val())
+            .filter(obj => obj.uid === userId)
+            .map(item => item),
+        },
+        () => {},
+      );
+    });
+  };
+  componentWillUnmount = () => {
+    this.focusListner.remove();
+  };
+  toggleLoading = () => {
+    this.setState({loading: !this.state.loading});
+  };
   //change tabs
   changeTab = index => {
     if (index === 1) {
@@ -65,10 +96,7 @@ class MyListing extends Component {
                   backgroundColor: trading ? theme.colors.primary : '#303030',
                 },
               ]}>
-              <Text style={[styles.mediumText, {color: 'white'}]}>
-                {' '}
-                Trading
-              </Text>
+              <Text style={[styles.mediumText, {color: 'white'}]}>Trading</Text>
             </TouchableOpacity>
             <TouchableOpacity
               activeOpacity={0.9}
@@ -101,7 +129,7 @@ class MyListing extends Component {
               </Text>
             </TouchableOpacity>
           </View>
-          {trading ? <Trading /> : null}
+          {trading && <Trading data={this.state.userProducts} />}
           {tradeDone ? <TradeDone /> : null}
           {favorite ? <Favorite /> : null}
         </ScrollView>

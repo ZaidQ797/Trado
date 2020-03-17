@@ -4,7 +4,6 @@ import {ThemeProvider} from 'react-native-elements';
 import theme from './src/theme';
 //Main Nav
 import MainNav from './src/navigation';
-console.disableYellowBox = false;
 class App extends Component {
   constructor(props) {
     super(props);
@@ -12,6 +11,7 @@ class App extends Component {
   }
 
   render() {
+    console.disableYellowBox = true;
     return (
       <ThemeProvider theme={theme}>
         <MainNav />

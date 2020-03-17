@@ -14,25 +14,23 @@ class Trading extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      products: [
-        {key: 1, image: car},
-        {key: 2, image: sofa},
-        {key: 3, image: shirt},
-        {key: 4, image: bicycle},
-        {key: 5, image: clock},
-      ],
+      products: props.data,
     };
   }
+
+  componentDidUpdate = (prevProps, prevState) => {
+    if (prevProps !== this.props) {
+      this.setState({
+        products: this.props.data,
+      });
+    }
+  };
+
   renderProducts = ({item, index}) => {
     return (
-      <TouchableOpacity
-        style={styles.productContainer}
-        activeOpacity={1}
-        onPress={() => {
-          this.props.navigation.navigate('ProductDetail', {id: index});
-        }}>
+      <TouchableOpacity style={styles.productContainer} activeOpacity={1}>
         <ImageBackground
-          source={item.image}
+          source={{uri: item.images[0]}}
           style={styles.userImageStyle}
           resizeMode={'cover'}>
           <Ionicons
@@ -42,6 +40,7 @@ class Trading extends Component {
             style={styles.heartStyle}
           />
         </ImageBackground>
+        <Text>{item.name}</Text>
       </TouchableOpacity>
     );
   };
@@ -51,6 +50,7 @@ class Trading extends Component {
     return (
       <FlatList
         data={products}
+        extraData={this.state}
         renderItem={this.renderProducts}
         keyExtractor={(item, index) => {
           index.toString();

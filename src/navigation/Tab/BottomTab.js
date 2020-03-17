@@ -63,21 +63,7 @@ const bottomTab = createBottomTabNavigator(
               <Ionicons name="ios-notifications" size={24} color={tintColor} />
             );
           case 'Trade':
-            return (
-              <View
-                style={{
-                  backgroundColor: theme.colors.primary,
-
-                  width: 50,
-                  height: 60,
-                  borderTopLeftRadius: 4,
-                  borderTopRightRadius: 4,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                <Entypo name="camera" size={24} color="white" />
-              </View>
-            );
+            return <Entypo name="camera" size={24} color={tintColor} />;
           case 'Messages':
             return <Entypo name="message" size={24} color={tintColor} />;
           case 'MyListing':

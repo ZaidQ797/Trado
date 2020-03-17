@@ -107,7 +107,12 @@ class PersonProfile extends Component {
             </View>
             <Divider style={styles.dividerStyle} />
           </View>
-          <View style={{flexDirection: 'row', width: '100%'}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              width: '100%',
+              justifyContent: 'space-between',
+            }}>
             <TouchableOpacity
               activeOpacity={0.9}
               onPress={() => {
@@ -139,7 +144,7 @@ class PersonProfile extends Component {
                 Trade Done
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               activeOpacity={0.9}
               onPress={() => {
                 this.changeTab(3);
@@ -151,11 +156,11 @@ class PersonProfile extends Component {
                 },
               ]}>
               <Text style={[styles.mediumText, {color: 'white'}]}>Reviews</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
           {trading && <Trading data={this.state.userProducts} />}
           {tradeDone && <TradeDone />}
-          {reviews && <Reviews />}
+          {/* {reviews && <Reviews />} */}
         </ScrollView>
       </View>
     );

@@ -134,6 +134,7 @@ class Home extends Component {
 
   onCategoryPress = catItem => {
     const {cat_id} = catItem;
+
     this.setState({
       data: this.state.backup.filter(item => item.cat_id === cat_id),
     });
@@ -273,7 +274,7 @@ class Home extends Component {
         {!this.state.loading && this.state.data.length === 0 ? (
           <View
             style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-            <Text>No Data Available</Text>
+            <Text>No Product Available</Text>
           </View>
         ) : (
           <FlatList

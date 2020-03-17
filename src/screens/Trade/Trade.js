@@ -6,8 +6,10 @@ import {
   Image,
   TextInput,
   Picker,
+  FlatList,
   SafeAreaView,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import {upload} from '../../assets';
 import HeaderLeft from '../../components/HeaderLeft';
@@ -24,8 +26,7 @@ import firebaseService from '../../service/firebase';
 import Snackbar from 'react-native-snackbar';
 import uuid from 'react-native-uuid';
 import RNFetchBlob from 'rn-fetch-blob';
-import {log} from 'react-native-reanimated';
-import {FlatList} from 'react-native-gesture-handler';
+import Entypo from 'react-native-vector-icons/Entypo';
 // Prepare Blob support
 const Blob = RNFetchBlob.polyfill.Blob;
 const fs = RNFetchBlob.fs;
@@ -38,14 +39,14 @@ class Trade extends Component {
     super(props);
     this.state = {
       images: [],
-      selectedCurrency: null,
-      name: null,
-      price: null,
-      description: null,
+      selectedCurrency: '',
+      name: '',
+      price: '',
+      description: '',
       isModalVisible: false,
-      selectedCondition: null,
-      selectedCategory: null,
-      selectedLocation: null,
+      selectedCondition: '',
+      selectedCategory: '',
+      selectedLocation: '',
       loading: false,
       condition: [
         {id: 0, name: 'Select Condition'},
@@ -187,7 +188,7 @@ class Trade extends Component {
       currency: selectedCurrency,
       description: description,
       condition: selectedCondition,
-      category: selectedCategory.cat_id,
+      cat_id: selectedCategory.cat_id,
       location: selectedLocation,
       images: this.state.uploadedImagesURL,
       uid: userId,
@@ -200,15 +201,17 @@ class Trade extends Component {
         this.toggleLoading();
         this.setState(
           {
-            name: '',
-            price: '',
+            name: null,
+            price: null,
             description: null,
             selectedCategory: null,
             selectedCondition: null,
             selectedLocation: null,
+            images: [],
           },
           () => {
             this.props.navigation.push('Home');
+            this.toggleLoading();
           },
         );
       })
@@ -334,192 +337,227 @@ class Trade extends Component {
           centerComponent={<HeaderCenter name="Home" />}
           containerStyle={styles.headerStyle}
         />
-        <Text
-          style={[
-            styles.largeText,
-            {color: theme.colors.primary, marginLeft: 10, marginTop: 10},
-          ]}>
-          Upload Photos
-        </Text>
-        {this.state.images.length === 0 && (
-          <TouchableOpacity onPress={this.pickProfile}>
-            <Image
-              source={upload}
-              style={{alignSelf: 'center', width: 100, height: 100}}
-            />
-          </TouchableOpacity>
-        )}
-
-        {this.state.images.length > 0 && (
-          <View>
-            <FlatList
-              data={this.state.images}
-              horizontal
-              renderItem={this.renderImage}
-              showsHorizontalScrollIndicator={false}
-              keyExtractor={index => index.toString()}
-            />
-          </View>
-        )}
-        <TouchableOpacity
-          style={[
-            styles.primaryButton,
-            {opacity: this.state.imagesUploaded ? 0.5 : 0.9},
-          ]}
-          activeOpacity={0.7}
-          disabled={this.state.uploadedImagesURL.length > 0}
-          onPress={this.uploadImage}>
-          {this.state.uploading ? (
-            <ActivityIndicator animating size={'large'} color={'#fff'} />
-          ) : (
-            <Text style={[styles.largeText, {color: theme.colors.white}]}>
-              {this.state.imagesUploaded ? 'Uploaded Success' : 'Upload Images'}
-            </Text>
-          )}
-        </TouchableOpacity>
-        <TextInput
-          style={styles.textInputStyle}
-          placeholder={'Product Title'}
-          value={title}
-          placeholderTextColor={'gray'}
-          onChangeText={name => this.setState({name})}
-        />
-        <View style={{flexDirection: 'row', alignSelf: 'center'}}>
-          <TextInput
-            style={[styles.textInputStyle, {width: '50%'}]}
-            placeholder={'Product Price'}
-            value={price}
-            placeholderTextColor={'gray'}
-            onChangeText={price => this.setState({price: price})}
-          />
-          {Platform.OS === 'ios' ? (
-            <Picker
-              selectedValue={this.state.selectedCurrency}
-              placeholder="Currency"
-              style={[styles.textInputStyle, {width: '40%'}]}
-              itemStyle={{
-                height: 40,
-                borderRadius: 5,
-                fontFamily: Fonts.GoogleSansMedium,
-                fontSize: 14,
-              }}
-              onValueChange={value => {
-                this.setState({selectedCurrency: value}, () => {
-                  console.warn(value);
-                });
-              }}>
-              {this.state.currencies &&
-                this.state.currencies.map((item, index) => {
-                  switch (item.id) {
-                    case 1:
-                      return (
-                        <Picker.Item label={item.name} value={item.name} />
-                      );
-                    default:
-                      return (
-                        <Picker.Item
-                          label={item.name}
-                          value={item.name}
-                          style={styles.mediumText}
-                        />
-                      );
-                  }
-                })}
-            </Picker>
-          ) : (
-            <View
+        <ScrollView>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginTop: 10,
+            }}>
+            <Text
               style={[
-                styles.textInputStyle,
-                {width: '40%', paddingVertical: 10, paddingHorizontal: 0},
+                styles.largeText,
+                {
+                  color: theme.colors.primary,
+                  margin: 10,
+                  alignSelf: 'center',
+                },
               ]}>
+              Upload Photos
+            </Text>
+            <Text
+              onPress={() => {
+                this.setState({images: []});
+              }}
+              style={{
+                alignSelf: 'center',
+                margin: 10,
+                color: theme.colors.primary,
+              }}>
+              Clear
+            </Text>
+          </View>
+          {this.state.images.length === 0 && (
+            <TouchableOpacity onPress={this.pickProfile}>
+              <Image
+                source={upload}
+                style={{alignSelf: 'center', width: 100, height: 100}}
+              />
+            </TouchableOpacity>
+          )}
+
+          {this.state.images.length > 0 && (
+            <View>
+              <FlatList
+                data={this.state.images}
+                horizontal
+                renderItem={this.renderImage}
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={index => index.toString()}
+              />
+            </View>
+          )}
+          <TouchableOpacity
+            style={[
+              styles.primaryButton,
+              {opacity: this.state.imagesUploaded ? 0.5 : 0.9},
+            ]}
+            activeOpacity={0.7}
+            disabled={this.state.uploadedImagesURL.length > 0}
+            onPress={this.uploadImage}>
+            {this.state.uploading ? (
+              <ActivityIndicator animating size={'large'} color={'#fff'} />
+            ) : (
+              <Text style={[styles.largeText, {color: theme.colors.white}]}>
+                {this.state.imagesUploaded
+                  ? 'Uploaded Success'
+                  : 'Upload Images'}
+              </Text>
+            )}
+          </TouchableOpacity>
+          <TextInput
+            style={styles.textInputStyle}
+            placeholder={'Product Title'}
+            value={title}
+            placeholderTextColor={'gray'}
+            onChangeText={name => this.setState({name})}
+          />
+          <View style={{flexDirection: 'row', alignSelf: 'center'}}>
+            <TextInput
+              style={[styles.textInputStyle, {width: '50%'}]}
+              placeholder={'Product Price'}
+              value={price}
+              placeholderTextColor={'gray'}
+              onChangeText={price => this.setState({price: price})}
+            />
+            {Platform.OS === 'ios' ? (
               <Picker
                 selectedValue={this.state.selectedCurrency}
-                style={{width: '100%', borderRadius: 5, height: 28}}
-                prompt={'Select Currency'}
-                placeholder={'none'}
+                placeholder="Currency"
+                style={[styles.textInputStyle, {width: '40%'}]}
+                itemStyle={{
+                  height: 40,
+                  borderRadius: 5,
+                  fontFamily: Fonts.GoogleSansMedium,
+                  fontSize: 14,
+                }}
                 onValueChange={value => {
-                  this.setState({selectedCurrency: value});
+                  this.setState({selectedCurrency: value}, () => {
+                    console.warn(value);
+                  });
                 }}>
                 {this.state.currencies &&
                   this.state.currencies.map((item, index) => {
                     switch (item.id) {
-                      case item.id === '0':
+                      case 1:
                         return (
-                          <Picker.Item
-                            id={index}
-                            label={item.name}
-                            value={item.name}
-                          />
+                          <Picker.Item label={item.name} value={item.name} />
                         );
                       default:
                         return (
                           <Picker.Item
-                            id={index}
                             label={item.name}
                             value={item.name}
+                            style={styles.mediumText}
                           />
                         );
                     }
                   })}
               </Picker>
-            </View>
-          )}
-        </View>
-        <CustomModal
-          getSelectedCategory={(selectedCategory, id) => {
-            this.setState({selectedCategory: selectedCategory});
-          }}
-        />
-        <ConditionModal
-          getSelectedCondition={selectedCondition => {
-            this.setState({selectedCondition: selectedCondition});
-          }}
-        />
-        <MapModal
-          getSelectedLocation={selectedLocation => {
-            this.setState({selectedLocation: selectedLocation});
-          }}
-        />
-        <TextInput
-          style={styles.textInputStyle}
-          placeholder={'Product Description'}
-          value={description}
-          multiline={true}
-          textAlignVertical="top"
-          placeholderTextColor={'gray'}
-          onChangeText={description =>
-            this.setState({description: description})
-          }
-        />
-        <TouchableOpacity
-          style={[
-            styles.primaryButton,
-            {opacity: this.state.imagesUploaded ? 0.9 : 0.5},
-          ]}
-          activeOpacity={0.7}
-          disabled={!this.state.imagesUploaded}
-          onPress={this.handleProduct}>
-          <Text style={[styles.largeText, {color: theme.colors.white}]}>
-            Add Product
-          </Text>
-        </TouchableOpacity>
-        {this.state.loading ? (
-          <ActivityIndicator
-            animating
-            color={theme.colors.primary}
-            // style={visible ? loader.centering : loader.hideIndicator}
-            size="large"
-            style={{
-              position: 'absolute',
-              left: 0,
-              right: 0,
-              top: 0,
-              bottom: 0,
-              alignItems: 'center',
-              justifyContent: 'center',
+            ) : (
+              <View
+                style={[
+                  styles.textInputStyle,
+                  {width: '40%', paddingVertical: 10, paddingHorizontal: 0},
+                ]}>
+                <Picker
+                  selectedValue={this.state.selectedCurrency}
+                  style={{width: '100%', borderRadius: 5, height: 28}}
+                  prompt={'Select Currency'}
+                  placeholder={'none'}
+                  onValueChange={value => {
+                    this.setState({selectedCurrency: value});
+                  }}>
+                  {this.state.currencies &&
+                    this.state.currencies.map((item, index) => {
+                      switch (item.id) {
+                        case item.id === '0':
+                          return (
+                            <Picker.Item
+                              id={index}
+                              label={item.name}
+                              value={item.name}
+                            />
+                          );
+                        default:
+                          return (
+                            <Picker.Item
+                              id={index}
+                              label={item.name}
+                              value={item.name}
+                            />
+                          );
+                      }
+                    })}
+                </Picker>
+              </View>
+            )}
+          </View>
+          <CustomModal
+            getSelectedCategory={(selectedCategory, id) => {
+              this.setState({selectedCategory: selectedCategory});
             }}
           />
-        ) : null}
+          <ConditionModal
+            getSelectedCondition={selectedCondition => {
+              this.setState({selectedCondition: selectedCondition});
+            }}
+          />
+
+          <TextInput
+            style={styles.textInputStyle}
+            placeholder={'Product Description'}
+            value={description}
+            multiline={true}
+            textAlignVertical="top"
+            placeholderTextColor={'gray'}
+            onChangeText={description =>
+              this.setState({description: description})
+            }
+          />
+          <MapModal
+            getSelectedLocation={selectedLocation => {
+              this.setState({selectedLocation: selectedLocation});
+            }}
+          />
+          {/* <TouchableOpacity
+            style={styles.textInputStyle}
+            activeOpacity={0.7}
+            onPress={() => this.props.navigation.navigate('MapModal')}>
+            <Text style={[styles.mediumText, {padding: 3}]}>
+              Choose Location
+            </Text>
+          </TouchableOpacity> */}
+          <TouchableOpacity
+            style={[
+              styles.primaryButton,
+              {opacity: this.state.imagesUploaded ? 0.9 : 0.5},
+            ]}
+            activeOpacity={0.7}
+            disabled={!this.state.imagesUploaded}
+            onPress={this.handleProduct}>
+            <Text style={[styles.largeText, {color: theme.colors.white}]}>
+              Add Product
+            </Text>
+          </TouchableOpacity>
+          {this.state.loading ? (
+            <ActivityIndicator
+              animating
+              color={theme.colors.primary}
+              // style={visible ? loader.centering : loader.hideIndicator}
+              size="large"
+              style={{
+                position: 'absolute',
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            />
+          ) : null}
+        </ScrollView>
       </View>
     );
   }
