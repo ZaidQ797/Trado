@@ -294,7 +294,7 @@ class Form extends Component {
       .then(res => {
         console.warn('In register final for moving to login');
         this.toggleLoading();
-        this.props.navigation.navigate('Login');
+        this.props.navigation.navigate('Home');
       })
       .catch(err => {
         alert(err);
